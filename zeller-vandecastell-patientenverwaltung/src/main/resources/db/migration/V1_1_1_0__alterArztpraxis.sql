@@ -1,0 +1,1 @@
+ALTER TABLE arztpraxen ADD COLUMN api_key VARCHAR(255);

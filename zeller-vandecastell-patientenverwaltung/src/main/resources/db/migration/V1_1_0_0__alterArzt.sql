@@ -1,0 +1,1 @@
+Alter table arzt drop column if exists aerzte_id;

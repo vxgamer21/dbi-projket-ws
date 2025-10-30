@@ -1,0 +1,13 @@
+ALTER TABLE warteraum ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE behandlungsraum ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE mitarbeiter ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE arzt ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE patient ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE behandlungen ADD COLUMN api_key VARCHAR(255);
+
+ALTER TABLE rechnung ADD COLUMN api_key VARCHAR(255);

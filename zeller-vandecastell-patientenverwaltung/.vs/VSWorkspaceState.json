@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\java",
+    "\\src\\main\\java\\com",
+    "\\src\\main\\java\\com\\example",
+    "\\src\\main\\java\\com\\example\\zellervandecastellpatientenverwaltung",
+    "\\src\\main\\java\\com\\example\\zellervandecastellpatientenverwaltung\\persistence",
+    "\\src\\main\\java\\com\\example\\zellervandecastellpatientenverwaltung\\persistence\\converter",
+    "\\src\\main\\java\\com\\example\\zellervandecastellpatientenverwaltung\\persistence\\exception"
+  ],
+  "SelectedNode": "\\pom.xml",
+  "PreviewInSolutionExplorer": false
+}

@@ -1,0 +1,143 @@
+@startuml
+
+
+entity Arztpraxis{
+    - id: Long
+    - name: String
+    - kassaArzt: boolean
+    - typ: Enum
+    - telefonNummer: TelefonNummer
+    - adresse: Adresse
+    -arzt : List<Arzt>
+    -patient: List<Patient>
+    -mitarbeiter: List<Mitarbeiter>
+
+}
+
+entity Email <RichType> << (R, #6699bb) >>{
+    - value: String
+}
+
+entity User{
+    - id : Long
+    - name: String
+    - gebDat: Date
+    - svnr: Long
+    - adresse: Adresse
+    - telefonNummer: TelefonNummer
+}
+
+entity Mitarbeiter extends User{
+    - gehalt: Long
+    - email: Email
+}
+
+entity Arzt extends User{
+    - fachgebiet: Fachgebiet
+}
+
+entity Patient extends User{
+
+    - versicherungsart: Versicherungsart
+}
+enum Versicherungsart <Enum>{
+    KRANKENKASSE
+    PRIVAT
+}
+
+entity Adresse <Embeddable> << (V,#339366) Valueobject >>{
+    - strasse:String
+    - stadt: String
+    - plz: String
+    - hausNr: String
+}
+
+
+
+
+
+entity Medikament <Embeddable> << (V,#339366) Valueobject >>{
+    - medikamentId: Long
+    - name: String
+    - wirkstoff: String
+}
+
+entity Behandlung{
+    - mitarbeiter: Mitarbeiter
+    - patient: Patient
+    - medikament: List<Medikament>
+    - datum: Date
+    - dauer: Long
+    - diagnose: String
+}
+
+entity Raum{
+    - raumNr: Long
+    - name: String
+}
+
+entity Warteraum extends Raum{
+    - anzahlSitzplaetze: Long
+}
+
+entity Behandlungsraum extends Raum{
+    - arzt: Arzt
+    - istFrei: boolean
+    - ausstattung: String
+}
+
+
+entity Rechnung{
+    - patient: Patient
+    - arzt: Arzt
+    - rechnungsNr: Long
+    - betrag: Long
+    - datum: Date
+}
+
+enum TelefonNummerArt <Enum>{
+    MOBIL
+    BUSINESS
+    FESTNETZ
+}
+
+entity TelefonNummer <Embeddable> << (V,#339366) Valueobject >>{
+    - laenderKennzahl: Integer
+    - ortsnetzKennzahl: Integer
+    - RufNummer: Integer
+}
+
+entity Email <RichType> << (R, #6699bb) embedded >>{
+}
+
+
+enum Fachgebiet <Enum>{
+    ORTHOPÄDIE
+    HNO
+    CHIRURGIE
+    GYNÄKOLOGIE
+    ALLGEMEINMEDIZIN
+}
+
+
+Arztpraxis *-- Arzt
+Arztpraxis *-- Patient
+Arztpraxis *-- Mitarbeiter
+Arztpraxis --> Adresse
+Mitarbeiter *-right-- Adresse
+Patient *-- Adresse
+Behandlung -right-> Arzt
+Behandlung --> Medikament
+Mitarbeiter ..> Email : < embedded
+Patient ..> Versicherungsart
+Arztpraxis *.. Raum
+Behandlung --> Behandlungsraum
+Rechnung -.up-> Patient
+Behandlung --> Patient
+TelefonNummer o-- TelefonNummerArt
+User --> TelefonNummer
+Arztpraxis -left-> TelefonNummer
+Arzt ..> Fachgebiet
+
+
+@enduml

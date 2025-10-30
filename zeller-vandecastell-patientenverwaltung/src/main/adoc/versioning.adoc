@@ -1,0 +1,4 @@
+# Versioning
+
+1::
+Major version - breaking changes allowed, possible refactoring

@@ -1,0 +1,116 @@
+type Arzt {
+    id: ID!
+    art: String
+    fachgebiet: String
+    gebDatum: String
+    lkennzahl: String
+    taakkkennzahl: String
+    plz: String
+    hausNr: String
+    svnr: String
+    rufnummer: String
+    stadt: String
+    strasse: String
+    email: String
+    name: String
+}
+
+type Arztpraxis {
+    id: ID!
+    art: String
+    istKassenarzt: Boolean
+    lkennzahl: String
+    okennzahl: String
+    plz: String
+    hausNr: String
+    rufnummer: String
+    stadt: String
+    strasse: String
+    name: String
+}
+
+type Patient {
+    id: ID!
+    art: String
+    gebDatum: String
+    lkennzahl: String
+    okennzahl: String
+    plz: String
+    versicherungsart: String
+    hausNr: String
+    svnr: String
+    rufnummer: String
+    stadt: String
+    strasse: String
+    name: String
+}
+
+type Behandlung {
+    id: ID!
+    arzt: Arzt!
+    patient: Patient!
+    behandlungsraum: Behandlungsraum
+    beginn: String
+    ende: String
+    diagnose: String
+}
+
+type Behandlungsraum {
+    id: ID!
+    isFrei: Boolean
+    ausstattung: String
+    name: String
+}
+
+type Medikament {
+    behandlung: Behandlung!
+    name: String
+    wirkstoff: String
+}
+
+type Mitarbeiter {
+    id: ID!
+    art: String
+    gebDatum: String
+    lkennzahl: String
+    okennzahl: String
+    plz: String
+    hausNr: String
+    gehalt: Float
+    svnr: String
+    rufnummer: String
+    stadt: String
+    strasse: String
+    email: String
+    name: String
+}
+
+type Rechnung {
+    id: ID!
+    arzt: Arzt!
+    patient: Patient!
+    betrag: Float!
+    bezahlt: Boolean!
+    zahlungsart: String
+    datum: String
+}
+
+type Warteraum {
+    id: ID!
+    anzahlSitzplaetze: Int!
+    name: String!
+}
+
+type Query {
+    aerzte: [Arzt!]!
+    arzt(id: ID!): Arzt
+
+    patienten: [Patient!]!
+    patient(id: ID!): Patient
+
+    behandlungen: [Behandlung!]!
+    behandlung(id: ID!): Behandlung
+
+    rechnungen: [Rechnung!]!
+    rechnung(id: ID!): Rechnung
+}

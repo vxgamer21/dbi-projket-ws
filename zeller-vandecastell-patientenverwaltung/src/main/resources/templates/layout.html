@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Patientenverwaltungssystem'">Patientenverwaltungssystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+
+        .main-content {
+            min-height: calc(100vh - 200px);
+            padding-top: 2rem;
+        }
+
+        .feature-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- THYMELEAF LAYOUT-FRAGMENT -->
+<th:block th:fragment="layout(content)">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/www">
+                <i class="fas fa-heartbeat text-primary me-2"></i>
+                MedVerwaltung
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#request.requestURI == '/www' or #request.requestURI == '/www/'} ? 'active'" href="/www">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#strings.startsWith(#request.requestURI, '/www/aerzte')} ? 'active'" href="/www/aerzte">
+                            <i class="fas fa-user-md me-1"></i>Ärzte
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#strings.startsWith(#request.requestURI, '/www/patienten')} ? 'active'" href="/www/patienten">
+                            <i class="fas fa-users me-1"></i>Patienten
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#strings.startsWith(#request.requestURI, '/www/behandlungen')} ? 'active'" href="/www/behandlungen">
+                            <i class="fas fa-stethoscope me-1"></i>Behandlungen
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#strings.startsWith(#request.requestURI, '/www/termine')} ? 'active'" href="/www/termine">
+                            <i class="fas fa-calendar-alt me-1"></i>Termine
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div th:if="${showPageHeader}" class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" th:if="${breadcrumbs}">
+                        <ol class="breadcrumb">
+                            <li th:each="crumb, crumbStat : ${breadcrumbs}"
+                                th:class="${crumbStat.last} ? 'breadcrumb-item active' : 'breadcrumb-item'">
+                                <a th:if="${!crumbStat.last}" th:href="${crumb.url}" th:text="${crumb.title}"></a>
+                                <span th:if="${crumbStat.last}" th:text="${crumb.title}"></span>
+                            </li>
+                        </ol>
+                    </nav>
+                    <h1 th:text="${pageTitle}">Seitentitel</h1>
+                    <p th:if="${pageDescription}" th:text="${pageDescription}" class="lead mb-0"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container" th:if="${message or error}">
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+
+        <!-- Hier wird der spezifische Seiteninhalt eingefügt -->
+        <div th:replace="${content}"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Patientenverwaltungssystem</h5>
+                    <p class="mb-0">Moderne Lösung für die Verwaltung Ihrer Praxis</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2025 MedVerwaltung. Alle Rechte vorbehalten.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

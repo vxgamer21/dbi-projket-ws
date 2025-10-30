@@ -1,0 +1,19 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top" th:fragment="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/www">
+            <i class="fas fa-heartbeat text-primary me-2"></i>
+            MedVerwaltung
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/www"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/www/aerzte"><i class="fas fa-user-md me-1"></i>Ärzte</a></li>
+                <li class="nav-item"><a class="nav-link" href="/www/patienten"><i class="fas fa-users me-1"></i>Patienten</a></li>
+                <li class="nav-item"><a class="nav-link" href="/www/behandlungen"><i class="fas fa-stethoscope me-1"></i>Behandlungen</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

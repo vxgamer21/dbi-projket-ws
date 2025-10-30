@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${#strings.isEmpty(behandlung.behandlungId) ? 'Neue Behandlung hinzufügen' : 'Behandlung bearbeiten'}">Formular</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container mt-5">
+    <h2 class="mb-4" th:text="${#strings.isEmpty(behandlung.behandlungId) ? 'Neue Behandlung hinzufügen' : 'Behandlung bearbeiten'}"></h2>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <form th:if="${behandlung.behandlungId == null}" th:action="@{/www/behandlungen/add}"
+          th:object="${behandlung}" method="post" class="needs-validation" novalidate>
+
+        <div class="mb-3">
+            <label for="beginn" class="form-label">Behandlungsbeginn</label>
+            <input type="datetime-local" th:field="*{beginn}" class="form-control" id="beginn" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('beginn')}" th:errors="*{beginn}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="ende" class="form-label">Behandlungsende</label>
+            <input type="datetime-local" th:field="*{ende}" class="form-control" id="ende">
+            <div class="text-danger" th:if="${#fields.hasErrors('ende')}" th:errors="*{ende}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="diagnose" class="form-label">Diagnose</label>
+            <textarea th:field="*{diagnose}" class="form-control" id="diagnose" rows="4" required
+                      placeholder="Beschreibung der Diagnose..."></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('diagnose')}" th:errors="*{diagnose}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="arzt" class="form-label">Behandelnder Arzt</label>
+            <select name="arztId" class="form-select" id="arzt" required>
+                <option value="" disabled selected>Bitte wählen…</option>
+                <option th:each="arzt : ${aerzte}"
+                        th:value="${arzt.arztId.id}"
+                        th:text="${arzt.name + ' (' + arzt.fachgebiet + ')'}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('arzt')}" th:errors="*{getArztId()}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="patient" class="form-label">Patient</label>
+            <select name="patientId" class="form-select" id="patient" required>
+                <option value="" disabled selected>Bitte wählen…</option>
+                <option th:each="patient : ${patienten}"
+                        th:value="${patient.patientID.id}"
+                        th:text="${patient.name + ' (SVNR: ' + patient.svnr + ')'}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('patient')}" th:errors="*{getPatientId()}"></div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a th:href="@{/www/behandlungen}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Zurück
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Speichern
+            </button>
+        </div>
+    </form>
+
+    <form th:if="${behandlung.behandlungId != null}" th:action="@{'/www/behandlungen/edit/' + ${behandlung.getBehandlungId()}}"
+          th:object="${behandlung}" method="post" class="needs-validation" novalidate>
+
+        <input type="hidden" th:field="*{behandlungId}" />
+<!--        <input type="hidden" th:field="*{apiKey}" />-->
+
+        <div class="mb-3">
+            <label for="beginn-edit" class="form-label">Behandlungsbeginn</label>
+            <input type="datetime-local" name="beginn" th:value="${behandlung.beginnFormatted}" class="form-control" id="beginn-edit" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('beginn')}" th:errors="*{beginn}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="ende-edit" class="form-label">Behandlungsende</label>
+            <input type="datetime-local" name="ende" th:value="${behandlung.endeFormatted}" class="form-control" id="ende-edit" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('ende')}" th:errors="*{ende}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="diagnose-edit" class="form-label">Diagnose</label>
+            <textarea th:field="*{diagnose}" class="form-control" id="diagnose-edit" rows="4" required
+                      placeholder="Beschreibung der Diagnose..."></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('diagnose')}" th:errors="*{diagnose}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="arzt-edit" class="form-label">Behandelnder Arzt</label>
+            <select name="arztId" class="form-select" id="arzt-edit" required>
+                <option value="" disabled>Bitte wählen…</option>
+                <option th:each="arzt : ${aerzte}"
+                        th:value="${arzt.arztId.id}"
+                        th:text="${arzt.name + ' (' + arzt.fachgebiet + ')'}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('arztId')}" th:errors="*{arztId}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="patient-edit" class="form-label">Patient</label>
+            <select name="patientId" class="form-select" id="patient-edit" required>
+                <option value="" disabled>Bitte wählen…</option>
+                <option th:each="patient : ${patienten}"
+                        th:value="${patient.patientID.id}"
+                        th:text="${patient.name + ' (SVNR: ' + patient.svnr + ')'}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('patientId')}" th:errors="*{patientId}"></div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a th:href="@{/www/behandlungen}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Zurück
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sync-alt me-2"></i>Aktualisieren
+            </button>
+        </div>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const beginnInput = document.getElementById('beginn') || document.getElementById('beginn-edit');
+        const endeInput = document.getElementById('ende') || document.getElementById('ende-edit');
+
+        if (beginnInput && endeInput) {
+            function validateTimeRange() {
+                if (beginnInput.value && endeInput.value) {
+                    const beginn = new Date(beginnInput.value);
+                    const ende = new Date(endeInput.value);
+
+                    if (ende <= beginn) {
+                        endeInput.setCustomValidity('Das Behandlungsende muss nach dem Behandlungsbeginn liegen.');
+                    } else {
+                        endeInput.setCustomValidity('');
+                    }
+                }
+            }
+
+            beginnInput.addEventListener('change', validateTimeRange);
+            endeInput.addEventListener('change', validateTimeRange);
+        }
+    });
+</script>
+</body>
+</html>
