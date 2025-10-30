@@ -1,35 +1,26 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Entity
-@DiscriminatorValue("P")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
-@Table(name = "patient")
+@Document(collection = "patienten")
 public class Patient extends User {
 
-    @EmbeddedId
-    private PatientID patientID;
+    @Id
+    private String id;
 
-    @Column(columnDefinition = "enum ('K','P')")
-    public Versicherungsart versicherungsart;
+    @Field("versicherungsart")
+    private Versicherungsart versicherungsart;
 
-
+    @NotNull
+    @Field("apiKey")
     private String apiKey;
-
-    @Embeddable
-    public record PatientID(@GeneratedValue @NotNull Long id) {}
-
-    public Long getId() {
-        return patientID != null ? patientID.id() : null;
-    }
-
 }

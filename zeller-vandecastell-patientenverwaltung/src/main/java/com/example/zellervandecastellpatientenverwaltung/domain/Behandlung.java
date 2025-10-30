@@ -1,12 +1,10 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,46 +13,35 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "behandlungen")
-public class Behandlung{
-    @EmbeddedId
-    private BehandlungId behandlungId;
+@Document(collection = "behandlungen")
+public class Behandlung {
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @Id
+    private String id;
+
     @NotNull
-    private Arzt arzt;
+    @Field("arztId")
+    private String arztId;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Patient_2_Behandlung"))
     @NotNull
-    private Patient patient;
+    @Field("patientId")
+    private String patientId;
 
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Behandlungsraum_2_Behandlung"))
-    private Behandlungsraum behandlungsraum;
+    @Field("behandlungsraumId")
+    private String behandlungsraumId;
 
-    @ElementCollection
-    @JoinTable(name = "medikamente",joinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "FK_Medikament_2_Behandlung")))
+    @Field("medikamente")
     private List<Medikament> medikamente;
 
+    @Field("beginn")
     private LocalDateTime beginn;
+
+    @Field("ende")
     private LocalDateTime ende;
+
+    @Field("diagnose")
     private String diagnose;
 
+    @Field("apiKey")
     private String apiKey;
-
-    public record BehandlungId(@GeneratedValue @NotNull Long id) {}
-
-    public Long getId() {
-        return behandlungId != null ? behandlungId.id() : null;
-    }
-    public void setId(Long id) {
-        if (behandlungId == null) {
-            this.behandlungId = new BehandlungId(id);
-        } else {
-            this.behandlungId = new BehandlungId(id);
-        }
-    }
-
 }

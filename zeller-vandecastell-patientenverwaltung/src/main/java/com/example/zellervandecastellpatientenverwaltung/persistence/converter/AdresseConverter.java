@@ -1,33 +1,21 @@
 package com.example.zellervandecastellpatientenverwaltung.persistence.converter;
 
 import com.example.zellervandecastellpatientenverwaltung.domain.Adresse;
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
-@Converter(autoApply = true)
-public class AdresseConverter implements AttributeConverter<Adresse, String> {
-
-    @Override
-    public String convertToDatabaseColumn(Adresse adresse) {
-        if (adresse == null) {
-            return null;
-        }
-        return String.join(",", adresse.getStrasse(), adresse.getStadt(), adresse.getPlz(), adresse.getHausNr());
-    }
+@Component
+public class AdresseConverter implements Converter<String, Adresse> {
 
     @Override
-    public Adresse convertToEntityAttribute(String dbData) {
-        if (dbData == null || dbData.isEmpty()) {
+    public Adresse convert(String source) {
+        if (source == null || source.isBlank()) {
             return null;
         }
-        String[] parts = dbData.split(",");
+        String[] parts = source.split(",");
         if (parts.length != 4) {
-            throw new IllegalArgumentException("Invalid Adresse data: " + dbData);
+            throw new IllegalArgumentException("Ungültiges Adressformat: " + source);
         }
-        return new Adresse(parts[0], parts[1], parts[2], parts[3]);
+        return new Adresse(parts[0].trim(), parts[1].trim(), parts[2].trim(), parts[3].trim());
     }
-
-
-
 }
-

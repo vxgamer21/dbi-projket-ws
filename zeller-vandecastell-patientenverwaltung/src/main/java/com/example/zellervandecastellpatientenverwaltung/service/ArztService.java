@@ -4,15 +4,12 @@ import com.example.zellervandecastellpatientenverwaltung.domain.*;
 import com.example.zellervandecastellpatientenverwaltung.exceptions.NotFoundException;
 import com.example.zellervandecastellpatientenverwaltung.foundation.ApiKeyGenerator;
 import com.example.zellervandecastellpatientenverwaltung.persistence.ArztRepository;
-import com.example.zellervandecastellpatientenverwaltung.persistence.BehandlungRepository;
-import com.example.zellervandecastellpatientenverwaltung.persistence.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,9 +17,10 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class ArztService {
+
     private final ArztRepository arztRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Arzt createArzt(String name, LocalDate gebDatum, Long svnr,
                            Fachgebiet fachgebiet, Adresse adresse, TelefonNummer telefonnummer, Email email) {
         if (name == null || name.trim().isEmpty()) {
@@ -48,27 +46,24 @@ public class ArztService {
 
         System.out.println("Arzt created: " + arzt);
 
-
         return arztRepository.save(arzt);
     }
-
 
     public List<Arzt> getAll() {
         return arztRepository.findAll();
     }
 
-    public Optional<Arzt> getArzt(Long arztId) {
-        return arztRepository.findById(new Arzt.ArztId(arztId))
+    public Optional<Arzt> getArzt(String arztId) {
+        return arztRepository.findById(arztId)
                 .or(() -> {
                     throw new NotFoundException("Arzt mit ID " + arztId + " nicht gefunden");
                 });
     }
 
-
-    @Transactional(readOnly = false)
-    public Arzt updateArzt(Long arztId, String name, LocalDate gebDatum, Long svnr,
+    @Transactional
+    public Arzt updateArzt(String arztId, String name, LocalDate gebDatum, Long svnr,
                            Fachgebiet fachgebiet, Adresse adresse, TelefonNummer telefonnummer, Email email) {
-        Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+        Arzt arzt = arztRepository.findById(arztId)
                 .orElseThrow(() -> new NotFoundException("Arzt mit ID " + arztId + " nicht gefunden"));
 
         if (name != null) arzt.setName(name);
@@ -82,11 +77,10 @@ public class ArztService {
         return arztRepository.save(arzt);
     }
 
-    @Transactional(readOnly = false)
-    public void deleteArzt(Long arztId) {
-        Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+    @Transactional
+    public void deleteArzt(String arztId) {
+        Arzt arzt = arztRepository.findById(arztId)
                 .orElseThrow(() -> new NotFoundException("Arzt mit ID " + arztId + " nicht gefunden"));
         arztRepository.delete(arzt);
     }
-
 }

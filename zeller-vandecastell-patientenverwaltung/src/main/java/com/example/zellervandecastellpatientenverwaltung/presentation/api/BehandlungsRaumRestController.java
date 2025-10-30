@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequiredArgsConstructor
-
 @RestController
 @RequestMapping("/behandlungsraum")
 public class BehandlungsRaumRestController {
@@ -25,7 +24,7 @@ public class BehandlungsRaumRestController {
     }
 
     @GetMapping("/{behandlungsraumId}")
-    public ResponseEntity<BehandlungsRaumDto> getBehandlungsraum(@PathVariable Long behandlungsraumId) {
+    public ResponseEntity<BehandlungsRaumDto> getBehandlungsraum(@PathVariable String behandlungsraumId) {
         return behandlungsRaumService.getBehandlungsraum(behandlungsraumId)
                 .map(BehandlungsRaumDto::new)
                 .map(ResponseEntity::ok)
@@ -33,7 +32,7 @@ public class BehandlungsRaumRestController {
     }
 
     @PostMapping
-    public ResponseEntity<BehandlungsRaumDto> createBehandlungsraum(@RequestParam Long behandlungId,
+    public ResponseEntity<BehandlungsRaumDto> createBehandlungsraum(@RequestParam String behandlungId,
                                                                     @RequestParam String ausstattung,
                                                                     @RequestParam boolean isFrei) {
         var behandlungsRaum = behandlungsRaumService.createBehandlungsraum(behandlungId, ausstattung, isFrei);
@@ -41,7 +40,7 @@ public class BehandlungsRaumRestController {
     }
 
     @PutMapping("/{behandlungsraumId}")
-    public ResponseEntity<BehandlungsRaumDto> updateBehandlungsraum(@PathVariable Long behandlungsraumId,
+    public ResponseEntity<BehandlungsRaumDto> updateBehandlungsraum(@PathVariable String behandlungsraumId,
                                                                     @RequestParam(required = false) String ausstattung,
                                                                     @RequestParam(required = false) Boolean isFrei) {
         var updatedBehandlungsRaum = behandlungsRaumService.updateBehandlungsraum(behandlungsraumId, ausstattung, isFrei);
@@ -49,7 +48,7 @@ public class BehandlungsRaumRestController {
     }
 
     @DeleteMapping("/{behandlungsraumId}")
-    public ResponseEntity<Void> deleteBehandlungsraum(@PathVariable Long behandlungsraumId) {
+    public ResponseEntity<Void> deleteBehandlungsraum(@PathVariable String behandlungsraumId) {
         behandlungsRaumService.deleteBehandlungsraum(behandlungsraumId);
         return ResponseEntity.noContent().build();
     }

@@ -85,7 +85,7 @@ public class ArztController {
                     arzt.getEmail()
             );
             System.out.println("=== ARZT GESPEICHERT ===");
-            System.out.println("ID: " + savedArzt.getArztId());
+            System.out.println("ID: " + savedArzt.getId());
             return "redirect:/www/aerzte";
         } catch (Exception e) {
             System.out.println("=== FEHLER BEIM SPEICHERN ===");
@@ -97,7 +97,7 @@ public class ArztController {
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        Arzt arzt = arztService.getArzt(id)
+        Arzt arzt = arztService.getArzt(String.valueOf(id))
                 .orElseThrow(() -> new NotFoundException("Arzt mit ID " + id + " nicht gefunden"));
 
         if (arzt.getEmail() == null) arzt.setEmail(new Email());
@@ -123,7 +123,7 @@ public class ArztController {
 
         try {
             arztService.updateArzt(
-                    id,
+                    String.valueOf(arzt.getArztid()),
                     arzt.getName(),
                     arzt.getGeburtsdatum(),
                     arzt.getSvnr(),
@@ -158,7 +158,7 @@ public class ArztController {
             }
         }
 
-        arztService.deleteArzt(arztId);
+        arztService.deleteArzt(String.valueOf(arztId));
         return "redirect:/www/aerzte";
     }
 }

@@ -26,7 +26,7 @@ public class WarteRaumRestController {
     }
 
     @GetMapping("/{warteraumId}")
-    public ResponseEntity<WarteraumDto> getWarteraum(@PathVariable Long warteraumId) {
+    public ResponseEntity<WarteraumDto> getWarteraum(@PathVariable String warteraumId) {
         return warteRaumService.getWarteraum(warteraumId)
                 .map(WarteraumDto::new)
                 .map(ResponseEntity::ok)
@@ -41,7 +41,7 @@ public class WarteRaumRestController {
 
     @PutMapping("/{warteraumId}")
     public ResponseEntity<WarteraumDto> updateWarteraum(
-            @PathVariable Long warteraumId,
+            @PathVariable String warteraumId,
             @RequestParam int neueAnzahlSitzplaetze
     ) {
         var updatedWarteraum = warteRaumService.updateWarteraum(warteraumId, neueAnzahlSitzplaetze);
@@ -49,7 +49,7 @@ public class WarteRaumRestController {
     }
 
     @DeleteMapping("/{warteraumId}")
-    public ResponseEntity<Void> deleteWarteraum(@PathVariable Long warteraumId) {
+    public ResponseEntity<Void> deleteWarteraum(@PathVariable String warteraumId) {
         warteRaumService.deleteWarteraum(warteraumId);
         return ResponseEntity.noContent().build();
     }

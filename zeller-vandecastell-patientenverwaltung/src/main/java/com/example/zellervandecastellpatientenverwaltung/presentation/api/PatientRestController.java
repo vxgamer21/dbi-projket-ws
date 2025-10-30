@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class PatientRestController {
 
     private final PatientService patientService;
     private static final Logger logger = LoggerFactory.getLogger(PatientRestController.class);
-
 
     @GetMapping
     public ResponseEntity<List<PatientDto>> getAllPatienten() {
@@ -36,7 +34,7 @@ public class PatientRestController {
     }
 
     @GetMapping("/{patientId}")
-    public ResponseEntity<PatientDto> getPatient(@PathVariable Long patientId) {
+    public ResponseEntity<PatientDto> getPatient(@PathVariable String patientId) {
         logger.info("GET /patient/{} aufgerufen - Patient mit ID {} wird abgerufen", patientId, patientId);
         return patientService.getPatient(patientId)
                 .map(PatientDto::new)
@@ -58,10 +56,9 @@ public class PatientRestController {
         return ResponseEntity.ok(new PatientDto(patient));
     }
 
-
     @PutMapping("/{patientId}")
     public ResponseEntity<PatientDto> updatePatient(
-            @PathVariable Long patientId,
+            @PathVariable String patientId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) LocalDate geburtsdatum,
             @RequestParam(required = false) Long svnr,
@@ -76,9 +73,8 @@ public class PatientRestController {
         return ResponseEntity.ok(new PatientDto(updatedPatient));
     }
 
-
     @DeleteMapping("/{patientId}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long patientId) {
+    public ResponseEntity<Void> deletePatient(@PathVariable String patientId) {
         patientService.deletePatient(patientId);
         logger.info("DELETE /patient/{} aufgerufen - Patient mit ID {} gelöscht", patientId, patientId);
         return ResponseEntity.noContent().build();

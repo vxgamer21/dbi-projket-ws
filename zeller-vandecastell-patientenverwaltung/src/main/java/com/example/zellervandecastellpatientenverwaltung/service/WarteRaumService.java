@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class WarteRaumService {
@@ -20,11 +20,12 @@ public class WarteRaumService {
 
     @Transactional
     public Warteraum createWarteraum(int anzahlSitzplaetze) {
-
         if (anzahlSitzplaetze < 0) {
             throw new IllegalArgumentException("Anzahl Sitzplätze muss einen gültigen Wert haben!");
         }
+
         var warteRaum = FixturesFactory.WarteRaum22Seats();
+        warteRaum.setAnzahlSitzplaetze(anzahlSitzplaetze);
 
         return warteraumRepository.save(warteRaum);
     }
@@ -33,13 +34,13 @@ public class WarteRaumService {
         return warteraumRepository.findAll();
     }
 
-    public Optional<Warteraum> getWarteraum(Long warteraumId) {
-        return warteraumRepository.findById(new Warteraum.WarteraumId(warteraumId));
+    public Optional<Warteraum> getWarteraum(String warteraumId) {
+        return warteraumRepository.findById(warteraumId);
     }
 
     @Transactional
-    public Warteraum updateWarteraum(Long warteraumId, int neueAnzahlSitzplaetze) {
-        Warteraum warteraum = warteraumRepository.findById(new Warteraum.WarteraumId(warteraumId))
+    public Warteraum updateWarteraum(String warteraumId, int neueAnzahlSitzplaetze) {
+        Warteraum warteraum = warteraumRepository.findById(warteraumId)
                 .orElseThrow(() -> new IllegalArgumentException("Warteraum mit ID " + warteraumId + " nicht gefunden."));
 
         if (neueAnzahlSitzplaetze < 0) {
@@ -51,10 +52,10 @@ public class WarteRaumService {
     }
 
     @Transactional
-    public void deleteWarteraum(Long warteraumId) {
-        if (!warteraumRepository.existsById(new Warteraum.WarteraumId(warteraumId))) {
+    public void deleteWarteraum(String warteraumId) {
+        if (!warteraumRepository.existsById(warteraumId)) {
             throw new IllegalArgumentException("Warteraum mit ID " + warteraumId + " existiert nicht.");
         }
-        warteraumRepository.deleteById(new Warteraum.WarteraumId(warteraumId));
+        warteraumRepository.deleteById(warteraumId);
     }
 }

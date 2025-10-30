@@ -1,34 +1,16 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.Objects;
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-
-@Embeddable
-@Table(name = "adresse")
 public class Email {
 
     @NotNull
     private String mail;
-
-
-    public String getMail() {
-        return mail;
-    }
-
-    public Email(String mail) {
-        setMail(mail);
-    }
-
 
     public void setMail(String mail) {
         if (mail == null) {

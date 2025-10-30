@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class MitarbeiterRestController {
     }
 
     @GetMapping("/{mitarbeiterId}")
-    public ResponseEntity<MitarbeiterDto> getMitarbeiter(@PathVariable Long mitarbeiterId) {
+    public ResponseEntity<MitarbeiterDto> getMitarbeiter(@PathVariable String mitarbeiterId) {
         return mitarbeiterService.getMitarbeiter(mitarbeiterId)
                 .map(MitarbeiterDto::new)
                 .map(ResponseEntity::ok)
@@ -46,7 +45,7 @@ public class MitarbeiterRestController {
 
     @PutMapping("/{mitarbeiterId}")
     public ResponseEntity<MitarbeiterDto> updateMitarbeiter(
-            @PathVariable Long mitarbeiterId,
+            @PathVariable String mitarbeiterId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) LocalDate gebDatum,
             @RequestParam(required = false) Long svnr,
@@ -57,7 +56,7 @@ public class MitarbeiterRestController {
     }
 
     @DeleteMapping("/{mitarbeiterId}")
-    public ResponseEntity<Void> deleteMitarbeiter(@PathVariable Long mitarbeiterId) {
+    public ResponseEntity<Void> deleteMitarbeiter(@PathVariable String mitarbeiterId) {
         mitarbeiterService.deleteMitarbeiter(mitarbeiterId);
         return ResponseEntity.noContent().build();
     }

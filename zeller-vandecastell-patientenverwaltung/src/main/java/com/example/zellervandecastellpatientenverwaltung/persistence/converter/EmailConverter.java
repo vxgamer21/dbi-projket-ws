@@ -1,28 +1,17 @@
 package com.example.zellervandecastellpatientenverwaltung.persistence.converter;
 
 import com.example.zellervandecastellpatientenverwaltung.domain.Email;
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-import java.util.Optional;
-
-
-@Converter(autoApply = true)
-public class EmailConverter implements AttributeConverter<Email,String> {
-    @Override
-    public String convertToDatabaseColumn(Email email) {
-        return Optional.ofNullable(email)
-                .map(Email::getMail)
-                .filter(Objects::nonNull)
-                .orElse(null);
-    }
+@Component
+public class EmailConverter implements Converter<String, Email> {
 
     @Override
-    public Email convertToEntityAttribute(String s) {
-        return switch (s){
-            case null -> null;
-            default -> new Email(s);
-        };
+    public Email convert(String source) {
+        if (source == null || source.isBlank()) {
+            return null;
+        }
+        return new Email(source.trim());
     }
 }

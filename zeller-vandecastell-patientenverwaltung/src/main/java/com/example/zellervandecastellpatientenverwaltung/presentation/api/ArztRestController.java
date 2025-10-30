@@ -13,28 +13,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RequiredArgsConstructor
-
 @RestController
 @RequestMapping("/arzt")
 public class ArztRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(ArztRestController.class);
-
     private final ArztService arztService;
 
     @GetMapping
-    public ResponseEntity<List<ArztDto>> getAllAerzte(){
+    public ResponseEntity<List<ArztDto>> getAllAerzte() {
         logger.info("GET /arzt aufgerufen - Alle Aerzte werden abgerufen");
-        return  ResponseEntity.ok(arztService.getAll()
+        return ResponseEntity.ok(arztService.getAll()
                 .stream()
                 .map(ArztDto::new)
                 .toList());
     }
 
     @GetMapping("/{arztId}")
-    public ResponseEntity<ArztDto> getBehandlungen(@PathVariable Long arztId){
+    public ResponseEntity<ArztDto> getArzt(@PathVariable String arztId) {
         logger.info("GET /arzt/" + arztId + " aufgerufen - Arzt mit ID " + arztId + " wird abgerufen");
         return arztService.getArzt(arztId)
                 .map(ArztDto::new)
@@ -59,7 +56,7 @@ public class ArztRestController {
     }
 
     @PutMapping("/{arztId}")
-    public ResponseEntity<ArztDto> updateArzt(@PathVariable Long arztId,
+    public ResponseEntity<ArztDto> updateArzt(@PathVariable String arztId,
                                               @RequestBody ArztCommands.CreateArztCommand command) {
         var updatedArzt = arztService.updateArzt(
                 arztId,
@@ -76,12 +73,9 @@ public class ArztRestController {
     }
 
     @DeleteMapping("/{arztId}")
-    public ResponseEntity<Void> deleteArzt(@PathVariable Long arztId) {
+    public ResponseEntity<Void> deleteArzt(@PathVariable String arztId) {
         arztService.deleteArzt(arztId);
         logger.info("DELETE /arzt/" + arztId + " aufgerufen - Arzt mit ID " + arztId + " gelöscht");
         return ResponseEntity.noContent().build();
-
     }
-
-
 }

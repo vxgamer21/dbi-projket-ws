@@ -1,8 +1,8 @@
 package com.example.zellervandecastellpatientenverwaltung.service;
 
+import com.example.zellervandecastellpatientenverwaltung.domain.Rechnung;
 import com.example.zellervandecastellpatientenverwaltung.domain.Arzt;
 import com.example.zellervandecastellpatientenverwaltung.domain.Patient;
-import com.example.zellervandecastellpatientenverwaltung.domain.Rechnung;
 import com.example.zellervandecastellpatientenverwaltung.foundation.ApiKeyGenerator;
 import com.example.zellervandecastellpatientenverwaltung.persistence.ArztRepository;
 import com.example.zellervandecastellpatientenverwaltung.persistence.PatientRepository;
@@ -26,11 +26,11 @@ public class RechnungService {
     private final RechnungRepository rechnungRepository;
 
     @Transactional
-    public Rechnung createRechnung(Long patientId, Long arztId, double betrag, LocalDateTime datum, boolean bezahlt) {
-        Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+    public Rechnung createRechnung(String patientId, String arztId, double betrag, LocalDateTime datum, boolean bezahlt) {
+        Arzt arzt = arztRepository.findById(arztId)
                 .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
 
-        Patient patient = patientRepository.findById(new Patient.PatientID(patientId))
+        Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
 
         String apiKey = ApiKeyGenerator.generateApiKey();
@@ -39,8 +39,8 @@ public class RechnungService {
                 .betrag(betrag)
                 .datum(datum)
                 .bezahlt(bezahlt)
-                .arzt(arzt)
-                .patient(patient)
+                .arztId(arzt.getId())
+                .patientId(patient.getId())
                 .apiKey(apiKey)
                 .build();
 
@@ -51,13 +51,13 @@ public class RechnungService {
         return rechnungRepository.findAll();
     }
 
-    public Optional<Rechnung> getRechnung(Long rechnungId) {
-        return rechnungRepository.findById(new Rechnung.RechnungId(rechnungId));
+    public Optional<Rechnung> getRechnung(String rechnungId) {
+        return rechnungRepository.findById(rechnungId);
     }
 
     @Transactional
-    public Rechnung updateRechnung(Long rechnungId, double neuerBetrag, boolean bezahlt) {
-        Rechnung rechnung = rechnungRepository.findById(new Rechnung.RechnungId(rechnungId))
+    public Rechnung updateRechnung(String rechnungId, double neuerBetrag, boolean bezahlt) {
+        Rechnung rechnung = rechnungRepository.findById(rechnungId)
                 .orElseThrow(() -> new IllegalArgumentException("Rechnung mit ID " + rechnungId + " nicht gefunden."));
 
         rechnung.setBetrag(neuerBetrag);
@@ -67,10 +67,10 @@ public class RechnungService {
     }
 
     @Transactional
-    public void deleteRechnung(Long rechnungId) {
-        if (!rechnungRepository.existsById(new Rechnung.RechnungId(rechnungId))) {
+    public void deleteRechnung(String rechnungId) {
+        if (!rechnungRepository.existsById(rechnungId)) {
             throw new IllegalArgumentException("Rechnung mit ID " + rechnungId + " existiert nicht.");
         }
-        rechnungRepository.deleteById(new Rechnung.RechnungId(rechnungId));
+        rechnungRepository.deleteById(rechnungId);
     }
 }

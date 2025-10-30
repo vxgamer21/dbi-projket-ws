@@ -1,32 +1,41 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-@Embeddable
-@Table(name = "adresse")
+@Document(collection = "adressen")
 public class Adresse {
 
-    @Column(length = 64)
+    @Field("strasse")
+    @NotBlank
+    @Size(max = 64)
     private String strasse;
-    @Column(length = 16)
+
+    @Field("hausNr")
+    @NotBlank
+    @Size(max = 16)
     private String hausNr;
-    @Column(length = 64)
+
+    @Field("stadt")
+    @NotBlank
+    @Size(max = 64)
     private String stadt;
-    @Column(length = 16)
+
+    @Field("plz")
+    @NotBlank
+    @Size(max = 16)
     private String plz;
 
-    @PostConstruct
+    // Optional: statische Validierungsmethode, kein Lifecycle-Callback nötig
     public void validate() {
-        if (strasse == null || stadt == null || plz == null || hausNr == null) {
+        if (strasse == null || hausNr == null || stadt == null || plz == null) {
             throw new AdresseException("Alle Felder müssen gesetzt sein.");
         }
     }

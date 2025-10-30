@@ -1,38 +1,34 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@DiscriminatorValue("B")
-@Table(name = "behandlungsraum")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-
+@Document(collection = "behandlungsraeume")
 public class Behandlungsraum extends Raum {
-    @EmbeddedId
-    private BehandlungsraumId behandlungsraumId;
 
+    @Id
+    private String id;
+
+    @Field("ausstattung")
     private String ausstattung;
 
+    @Field("isFrei")
     private Boolean isFrei;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Field("behandlungen")
     private List<Behandlung> behandlungen;
 
     @NotNull
+    @Field("apiKey")
     private String apiKey;
-
-    @Embeddable
-    public record BehandlungsraumId(@GeneratedValue @NotNull Long id) {}
 }

@@ -41,16 +41,16 @@ public class BehandlungController {
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        Behandlung behandlung = behandlungService.getBehandlung(id)
+        Behandlung behandlung = behandlungService.getBehandlung(String.valueOf(id))
                 .orElseThrow(() -> new NotFoundException("Behandlung mit ID " + id + " nicht gefunden"));
 
         BehandlungFormDto dto = new BehandlungFormDto();
-        dto.setBehandlungId(behandlung.getId());
+        dto.setBehandlungId(Long.valueOf(behandlung.getId()));
         dto.setBeginn(behandlung.getBeginn());
         dto.setEnde(behandlung.getEnde());
         dto.setDiagnose(behandlung.getDiagnose());
-        dto.setArztId(behandlung.getArzt() != null ? behandlung.getArzt().getId() : null);
-        dto.setPatientId(behandlung.getPatient() != null ? behandlung.getPatient().getId() : null);
+        dto.setArztId(behandlung.getArztId() != null ? Long.valueOf(behandlung.getArztId()) : null);
+        dto.setPatientId(behandlung.getPatientId() != null ? Long.valueOf(behandlung.getPatientId()) : null);
 
         model.addAttribute("behandlung", dto);
         model.addAttribute("aerzte", arztService.getAll());
@@ -62,7 +62,7 @@ public class BehandlungController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        behandlungService.deleteBehandlung(id);
+        behandlungService.deleteBehandlung(String.valueOf(id));
         return "redirect:/www/behandlungen";
     }
 
@@ -77,12 +77,15 @@ public class BehandlungController {
         }
 
         try {
+            String arztId = behandlungDto.getArztId() != null ? String.valueOf(behandlungDto.getArztId()) : null;
+            String patientId = behandlungDto.getPatientId() != null ? String.valueOf(behandlungDto.getPatientId()) : null;
+
             Behandlung savedBehandlung = behandlungService.createBehandlung(
                     behandlungDto.getBeginn(),
                     behandlungDto.getEnde(),
                     behandlungDto.getDiagnose(),
-                    behandlungDto.getArztId(),
-                    behandlungDto.getPatientId()
+                    arztId,
+                    patientId
             );
             return "redirect:/www/behandlungen";
         } catch (Exception e) {
@@ -105,13 +108,16 @@ public class BehandlungController {
         }
 
         try {
+            String arztId = behandlungDto.getArztId() != null ? String.valueOf(behandlungDto.getArztId()) : null;
+            String patientId = behandlungDto.getPatientId() != null ? String.valueOf(behandlungDto.getPatientId()) : null;
+
             Behandlung updatedBehandlung = behandlungService.updateBehandlung(
-                    id,
+                    String.valueOf(id),
                     behandlungDto.getBeginn(),
                     behandlungDto.getEnde(),
                     behandlungDto.getDiagnose(),
-                    behandlungDto.getArztId(),
-                    behandlungDto.getPatientId()
+                    arztId,
+                    patientId
             );
             return "redirect:/www/behandlungen";
         } catch (Exception e) {

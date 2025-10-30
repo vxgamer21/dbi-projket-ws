@@ -1,42 +1,34 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import com.example.zellervandecastellpatientenverwaltung.persistence.converter.EmailConverter;
-import com.example.zellervandecastellpatientenverwaltung.persistence.converter.FachgebietConverter;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+/**
+ * Arzt-Dokument für MongoDB
+ */
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@DiscriminatorValue("A")
-@Table(name = "arzt")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Document(collection = "aerzte")
 public class Arzt extends User {
 
-    @EmbeddedId
-    private ArztId arztId;
+    @Id
+    private String id; // Mongo ObjectId (automatisch generiert)
 
     @NotNull(message = "Fachgebiet muss gewählt werden")
-    @Convert(converter = FachgebietConverter.class)
-    @Column(columnDefinition = FachgebietConverter.COLUMN_DEFINITION)
-    public Fachgebiet fachgebiet;
+    @Field("fachgebiet")
+    private Fachgebiet fachgebiet;
 
-    @Convert(converter = EmailConverter.class)
+    @Field("email")
+    @Indexed(unique = true)
     private Email email;
 
-
+    @Field("apiKey")
     private String apiKey;
-
-    @Embeddable
-    public record ArztId(@GeneratedValue @NotNull Long id) {}
-
-    public Long getId() {
-        return arztId != null ? arztId.id() : null;
-    }
 }

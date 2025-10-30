@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional(readOnly = true)
 public class PatientService {
+
     private final PatientRepository patientRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Patient createPatient(String name, LocalDate gebDatum, Long svnr,
                                  Versicherungsart versicherungsart, Adresse adresse,
                                  TelefonNummer telefonnummer) {
@@ -49,20 +49,18 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-
-
     public List<Patient> getAll() {
         return patientRepository.findAll();
     }
 
-    public Optional<Patient> getPatient(Long patientId) {
-        return patientRepository.findById(new Patient.PatientID(patientId));
+    public Optional<Patient> getPatient(String patientId) {
+        return patientRepository.findById(patientId);
     }
 
-    @Transactional(readOnly = false)
-    public Patient updatePatient(Long patientId, String name, LocalDate gebDatum, Long svnr,
+    @Transactional
+    public Patient updatePatient(String patientId, String name, LocalDate gebDatum, Long svnr,
                                  Versicherungsart versicherungsart, Adresse adresse, TelefonNummer telefonnummer) {
-        Patient patient = patientRepository.findById(new Patient.PatientID(patientId))
+        Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new NotFoundException("Patient mit ID " + patientId + " nicht gefunden"));
 
         if (name != null) patient.setName(name);
@@ -75,13 +73,11 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-
-
     @Transactional
-    public void deletePatient(Long patientId) {
-        if (!patientRepository.existsById(new Patient.PatientID(patientId))) {
+    public void deletePatient(String patientId) {
+        if (!patientRepository.existsById(patientId)) {
             throw new IllegalArgumentException("Patient mit ID " + patientId + " existiert nicht.");
         }
-        patientRepository.deleteById(new Patient.PatientID(patientId));
+        patientRepository.deleteById(patientId);
     }
 }

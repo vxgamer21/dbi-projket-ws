@@ -18,16 +18,17 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class BehandlungService {
+
     private final BehandlungRepository behandlungRepository;
     private final ArztRepository arztRepository;
     private final PatientRepository patientRepository;
 
-    @Transactional(readOnly = false)
-    public Behandlung createBehandlung(LocalDateTime beginn, LocalDateTime ende, String diagnose, Long arztId, Long patientId) {
-        Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+    @Transactional
+    public Behandlung createBehandlung(LocalDateTime beginn, LocalDateTime ende, String diagnose, String arztId, String patientId) {
+        Arzt arzt = arztRepository.findById(arztId)
                 .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
 
-        Patient patient = patientRepository.findById(new Patient.PatientID(patientId))
+        Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
 
         String apiKey = ApiKeyGenerator.generateApiKey();
@@ -36,8 +37,8 @@ public class BehandlungService {
                 .beginn(beginn)
                 .ende(ende)
                 .diagnose(diagnose)
-                .arzt(arzt)
-                .patient(patient)
+                .arztId(arzt.getId())
+                .patientId(patient.getId())
                 .apiKey(apiKey)
                 .build();
 
@@ -48,43 +49,37 @@ public class BehandlungService {
         return behandlungRepository.findAll();
     }
 
-    public Optional<Behandlung> getBehandlung(Long behandlungId) {
-        return behandlungRepository.findById(new Behandlung.BehandlungId(behandlungId));
+    public Optional<Behandlung> getBehandlung(String behandlungId) {
+        return behandlungRepository.findById(behandlungId);
     }
 
-    @Transactional(readOnly = false)
-    public Behandlung updateBehandlung(Long behandlungId, LocalDateTime beginn, LocalDateTime ende, String diagnose, Long arztId, Long patientId) {
-        Behandlung behandlung = behandlungRepository.findById(new Behandlung.BehandlungId(behandlungId))
+    @Transactional
+    public Behandlung updateBehandlung(String behandlungId, LocalDateTime beginn, LocalDateTime ende, String diagnose, String arztId, String patientId) {
+        Behandlung behandlung = behandlungRepository.findById(behandlungId)
                 .orElseThrow(() -> new IllegalArgumentException("Behandlung not found"));
 
-        if (beginn != null) {
-            behandlung.setBeginn(beginn);
-        }
-        if (ende != null) {
-            behandlung.setEnde(ende);
-        }
-        if (diagnose != null) {
-            behandlung.setDiagnose(diagnose);
-        }
+        if (beginn != null) behandlung.setBeginn(beginn);
+        if (ende != null) behandlung.setEnde(ende);
+        if (diagnose != null) behandlung.setDiagnose(diagnose);
 
         if (arztId != null) {
-            Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+            Arzt arzt = arztRepository.findById(arztId)
                     .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
-            behandlung.setArzt(arzt);
+            behandlung.setArztId(arzt.getId());
         }
 
         if (patientId != null) {
-            Patient patient = patientRepository.findById(new Patient.PatientID(patientId))
+            Patient patient = patientRepository.findById(patientId)
                     .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-            behandlung.setPatient(patient);
+            behandlung.setPatientId(patient.getId());
         }
 
         return behandlungRepository.save(behandlung);
     }
 
-    @Transactional(readOnly = false)
-    public void deleteBehandlung(Long behandlungId) {
-        Behandlung behandlung = behandlungRepository.findById(new Behandlung.BehandlungId(behandlungId))
+    @Transactional
+    public void deleteBehandlung(String behandlungId) {
+        Behandlung behandlung = behandlungRepository.findById(behandlungId)
                 .orElseThrow(() -> new IllegalArgumentException("Behandlung not found"));
         behandlungRepository.delete(behandlung);
     }

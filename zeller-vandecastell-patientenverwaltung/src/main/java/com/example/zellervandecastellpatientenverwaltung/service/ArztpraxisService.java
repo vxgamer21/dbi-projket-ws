@@ -4,13 +4,11 @@ import com.example.zellervandecastellpatientenverwaltung.domain.*;
 import com.example.zellervandecastellpatientenverwaltung.foundation.ApiKeyGenerator;
 import com.example.zellervandecastellpatientenverwaltung.persistence.ArztRepository;
 import com.example.zellervandecastellpatientenverwaltung.persistence.ArztpraxisRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +16,13 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class ArztpraxisService {
+
     private final ArztRepository arztRepository;
     private final ArztpraxisRepository arztpraxisRepository;
 
-    @Transactional(readOnly = false)
-    public Arztpraxis createArztpraxis(String name, boolean istKassenarzt, Long adresseId, Long telefonnummerId, Long arztId, String apiKey) {
-        Arzt arzt = arztRepository.findById(new Arzt.ArztId(arztId))
+    @Transactional
+    public Arztpraxis createArztpraxis(String name, boolean istKassenarzt, String arztId, String apiKey) {
+        Arzt arzt = arztRepository.findById(arztId)
                 .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
 
         var telefonNummer = FixturesFactory.StandardMobil();
@@ -49,7 +48,7 @@ public class ArztpraxisService {
         return arztpraxisRepository.findAll();
     }
 
-    public Optional<Arztpraxis> getArztpraxis(Long arztpraxisId) {
-        return arztpraxisRepository.findById(new Arztpraxis.ArztpraxisId(arztpraxisId));
+    public Optional<Arztpraxis> getArztpraxis(String arztpraxisId) {
+        return arztpraxisRepository.findById(arztpraxisId);
     }
 }

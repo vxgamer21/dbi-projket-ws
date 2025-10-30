@@ -1,13 +1,10 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
@@ -15,40 +12,38 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "arztpraxen")
-public class Arztpraxis{
-    @EmbeddedId
-    private ArztpraxisId arztpraxisId;
+@Document(collection = "arztpraxen")
+public class Arztpraxis {
+
+    @Id
+    private String id;
 
     @NotNull
+    @Field("name")
     private String name;
+
+    @Field("istKassenarzt")
     private Boolean istKassenarzt;
 
+    @Field("adresse")
     private Adresse adresse;
 
-    @Embedded
+    @Field("telefonNummer")
     private TelefonNummer telefonNummer;
 
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Arztpraxis_2_Arzt"))
+    @Field("aerzte")
     private List<Arzt> aerzte;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Arztpraxis_2_Mitarbeiter"))
+    @Field("mitarbeiter")
     private List<Mitarbeiter> mitarbeiter;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Arztpraxis_2_Behandlungsraum"))
+    @Field("behandlungsraeume")
     private List<Behandlungsraum> behandlungsraum;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Arztpraxis_2_Warteraum"))
+    @Field("warteraeume")
     private List<Warteraum> warteraum;
 
     @NotNull
+    @Field("apiKey")
     private String apiKey;
-
-    public record ArztpraxisId(@GeneratedValue @NotNull Long id) {}
 }

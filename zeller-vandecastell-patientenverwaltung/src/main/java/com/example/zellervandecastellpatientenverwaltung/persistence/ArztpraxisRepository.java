@@ -1,17 +1,9 @@
 package com.example.zellervandecastellpatientenverwaltung.persistence;
 
 import com.example.zellervandecastellpatientenverwaltung.domain.Arztpraxis;
-
-import com.example.zellervandecastellpatientenverwaltung.dtos.ArztpraxisDto;
-import com.example.zellervandecastellpatientenverwaltung.dtos.ArztpraxisDtos;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
-public interface ArztpraxisRepository extends JpaRepository<Arztpraxis, Arztpraxis.ArztpraxisId> {
+public interface ArztpraxisRepository extends MongoRepository<Arztpraxis, String> {
     Optional<Arztpraxis> findByNameIgnoreCase(String name);
-
-//    List<ArztpraxisDto> findAllProjectedBy();
-//    List<ArztpraxisDtos.Minimal> findAllMinimalBy();
 }

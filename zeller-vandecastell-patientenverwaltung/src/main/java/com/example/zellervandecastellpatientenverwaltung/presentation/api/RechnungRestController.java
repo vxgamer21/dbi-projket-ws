@@ -27,7 +27,7 @@ public class RechnungRestController {
     }
 
     @GetMapping("/{rechnungId}")
-    public ResponseEntity<RechnungDto> getRechnung(@PathVariable Long rechnungId) {
+    public ResponseEntity<RechnungDto> getRechnung(@PathVariable String rechnungId) {
         return rechnungService.getRechnung(rechnungId)
                 .map(RechnungDto::new)
                 .map(ResponseEntity::ok)
@@ -36,8 +36,8 @@ public class RechnungRestController {
 
     @PostMapping
     public ResponseEntity<RechnungDto> createRechnung(
-            @RequestParam Long patientId,
-            @RequestParam Long arztId,
+            @RequestParam String patientId,
+            @RequestParam String arztId,
             @RequestParam double betrag,
             @RequestParam String datum,   // ISO 8601 String erwartet
             @RequestParam boolean bezahlt
@@ -49,7 +49,7 @@ public class RechnungRestController {
 
     @PutMapping("/{rechnungId}")
     public ResponseEntity<RechnungDto> updateRechnung(
-            @PathVariable Long rechnungId,
+            @PathVariable String rechnungId,
             @RequestParam double neuerBetrag,
             @RequestParam boolean bezahlt
     ) {
@@ -58,7 +58,7 @@ public class RechnungRestController {
     }
 
     @DeleteMapping("/{rechnungId}")
-    public ResponseEntity<Void> deleteRechnung(@PathVariable Long rechnungId) {
+    public ResponseEntity<Void> deleteRechnung(@PathVariable String rechnungId) {
         rechnungService.deleteRechnung(rechnungId);
         return ResponseEntity.noContent().build();
     }

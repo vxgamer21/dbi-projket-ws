@@ -72,9 +72,9 @@ public class FixturesFactory {
         String apiKey = ApiKeyGenerator.generateApiKey();
 
         return Behandlung.builder()
-                .behandlungsraum(BehandlungsRaum1Frei())
-                .patient(PatientMaxMustermann())
-                .arzt(ArztAllgemein())
+                .behandlungsraumId("1")
+                .patientId("2")
+                .arztId("3")
                 .apiKey(apiKey)
                 .build();
     }
@@ -94,12 +94,10 @@ public class FixturesFactory {
                 .build();
     }
 
-
     public static Arztpraxis ArztpraxisStandard() {
         String apiKey = ApiKeyGenerator.generateApiKey();
 
         return Arztpraxis.builder()
-                .arztpraxisId(new Arztpraxis.ArztpraxisId(1L))
                 .name("Ordination Dr. Müller")
                 .istKassenarzt(true)
                 .adresse(new Adresse("Hauptstraße", "10", "1010", "Wien"))
@@ -111,7 +109,4 @@ public class FixturesFactory {
                 .apiKey(apiKey)
                 .build();
     }
-
-
-
 }

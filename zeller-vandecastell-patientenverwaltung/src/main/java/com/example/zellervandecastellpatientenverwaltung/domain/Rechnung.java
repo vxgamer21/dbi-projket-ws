@@ -1,12 +1,10 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -14,34 +12,36 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-@Entity
-@Table(name = "rechnung")
+@Document(collection = "rechnungen")
 public class Rechnung {
 
-    @EmbeddedId
-    private RechnungId rechnungId;
+    @Id
+    private String id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Rechnung_2_Patient"))
     @NotNull
-    private Patient patient;
+    @Field("patientId")
+    private String patientId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_Rechnung_2_Arzt"))
     @NotNull
-    private Arzt arzt;
+    @Field("arztId")
+    private String arztId;
 
     @DecimalMin(value = "0.0", inclusive = false)
     @DecimalMax(value = "10000.0", inclusive = true)
     @NotNull
+    @Field("betrag")
     private Double betrag;
+
+    @Field("bezahlt")
     private boolean bezahlt;
+
+    @Field("zahlungsart")
     private Zahlungsart zahlungsart;
+
+    @Field("datum")
     private LocalDateTime datum;
 
     @NotNull
+    @Field("apiKey")
     private String apiKey;
-
-    public record RechnungId(@GeneratedValue @NotNull Long id) {}
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,13 +53,13 @@ public class MitarbeiterService {
         return mitarbeiterRepository.findAll();
     }
 
-    public Optional<Mitarbeiter> getMitarbeiter(Long mitarbeiterId) {
-        return mitarbeiterRepository.findById(new Mitarbeiter.MitarbeiterID(mitarbeiterId));
+    public Optional<Mitarbeiter> getMitarbeiter(String mitarbeiterId) {
+        return mitarbeiterRepository.findById(mitarbeiterId);
     }
 
     @Transactional
-    public Mitarbeiter updateMitarbeiter(Long mitarbeiterId, String neuerName, LocalDate neuesGebDatum, Long neueSvnr, Long neuesGehalt) {
-        Mitarbeiter mitarbeiter = mitarbeiterRepository.findById(new Mitarbeiter.MitarbeiterID(mitarbeiterId))
+    public Mitarbeiter updateMitarbeiter(String mitarbeiterId, String neuerName, LocalDate neuesGebDatum, Long neueSvnr, Long neuesGehalt) {
+        Mitarbeiter mitarbeiter = mitarbeiterRepository.findById(mitarbeiterId)
                 .orElseThrow(() -> new IllegalArgumentException("Mitarbeiter mit ID " + mitarbeiterId + " nicht gefunden."));
 
         if (neuerName != null && !neuerName.trim().isEmpty()) {
@@ -86,10 +85,10 @@ public class MitarbeiterService {
     }
 
     @Transactional
-    public void deleteMitarbeiter(Long mitarbeiterId) {
-        if (!mitarbeiterRepository.existsById(new Mitarbeiter.MitarbeiterID(mitarbeiterId))) {
+    public void deleteMitarbeiter(String mitarbeiterId) {
+        if (!mitarbeiterRepository.existsById(mitarbeiterId)) {
             throw new IllegalArgumentException("Mitarbeiter mit ID " + mitarbeiterId + " existiert nicht.");
         }
-        mitarbeiterRepository.deleteById(new Mitarbeiter.MitarbeiterID(mitarbeiterId));
+        mitarbeiterRepository.deleteById(mitarbeiterId);
     }
 }

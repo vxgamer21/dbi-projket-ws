@@ -21,18 +21,19 @@ public class BehandlungsRaumService {
     private final BehandlungRepository behandlungRepository;
     private final BehandlungsraumRepository behandlungsRaumRepository;
 
-    @Transactional(readOnly = false)
-    public Behandlungsraum createBehandlungsraum(Long behandlungId, String ausstattung, boolean isFrei) {
-
-        if (ausstattung == null || ausstattung.isEmpty()) {
+    @Transactional
+    public Behandlungsraum createBehandlungsraum(String behandlungId, String ausstattung, boolean isFrei) {
+        if (ausstattung == null || ausstattung.isBlank()) {
             throw new IllegalArgumentException("Ausstattung darf nicht null oder leer sein.");
         }
 
-        Behandlung behandlung = behandlungRepository.findById(new Behandlung.BehandlungId(behandlungId))
+        Behandlung behandlung = behandlungRepository.findById(behandlungId)
                 .orElseThrow(() -> new IllegalArgumentException("Behandlung not found"));
 
-
         var behandlungsRaum = FixturesFactory.BehandlungsRaum1Frei();
+        behandlungsRaum.setAusstattung(ausstattung);
+        behandlungsRaum.setIsFrei(isFrei);
+        behandlungsRaum.setBehandlungen(List.of(behandlung));
 
         return behandlungsRaumRepository.save(behandlungsRaum);
     }
@@ -41,13 +42,13 @@ public class BehandlungsRaumService {
         return behandlungsRaumRepository.findAll();
     }
 
-    public Optional<Behandlungsraum> getBehandlungsraum(Long behandlungsRaumId) {
-        return behandlungsRaumRepository.findById(new Behandlungsraum.BehandlungsraumId(behandlungsRaumId));
+    public Optional<Behandlungsraum> getBehandlungsraum(String behandlungsRaumId) {
+        return behandlungsRaumRepository.findById(behandlungsRaumId);
     }
 
-    @Transactional(readOnly = false)
-    public Behandlungsraum updateBehandlungsraum(Long behandlungsRaumId, String ausstattung, Boolean isFrei) {
-        Behandlungsraum behandlungsRaum = behandlungsRaumRepository.findById(new Behandlungsraum.BehandlungsraumId(behandlungsRaumId))
+    @Transactional
+    public Behandlungsraum updateBehandlungsraum(String behandlungsRaumId, String ausstattung, Boolean isFrei) {
+        Behandlungsraum behandlungsRaum = behandlungsRaumRepository.findById(behandlungsRaumId)
                 .orElseThrow(() -> new IllegalArgumentException("Behandlungsraum nicht gefunden"));
 
         if (ausstattung != null && !ausstattung.trim().isEmpty()) {
@@ -60,11 +61,11 @@ public class BehandlungsRaumService {
         return behandlungsRaumRepository.save(behandlungsRaum);
     }
 
-    @Transactional(readOnly = false)
-    public void deleteBehandlungsraum(Long behandlungsRaumId) {
-        if (!behandlungsRaumRepository.existsById(new Behandlungsraum.BehandlungsraumId(behandlungsRaumId))) {
+    @Transactional
+    public void deleteBehandlungsraum(String behandlungsRaumId) {
+        if (!behandlungsRaumRepository.existsById(behandlungsRaumId)) {
             throw new IllegalArgumentException("Behandlungsraum existiert nicht");
         }
-        behandlungsRaumRepository.deleteById(new Behandlungsraum.BehandlungsraumId(behandlungsRaumId));
+        behandlungsRaumRepository.deleteById(behandlungsRaumId);
     }
 }

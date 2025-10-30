@@ -20,7 +20,7 @@ public class ArztpraxisRestController {
     private final ArztpraxisService arztpraxisService;
 
     @GetMapping
-    public ResponseEntity<List<ArztpraxisDto>> getAllArztpraxen(){
+    public ResponseEntity<List<ArztpraxisDto>> getAllArztpraxen() {
         return ResponseEntity.ok(arztpraxisService.getAll()
                 .stream()
                 .map(ArztpraxisDto::new)
@@ -28,7 +28,7 @@ public class ArztpraxisRestController {
     }
 
     @GetMapping("/{arztpraxisId}")
-    public ResponseEntity<ArztpraxisDto> getArztpraxis(@PathVariable Long arztpraxisId){
+    public ResponseEntity<ArztpraxisDto> getArztpraxis(@PathVariable String arztpraxisId) {
         return arztpraxisService.getArztpraxis(arztpraxisId)
                 .map(ArztpraxisDto::new)
                 .map(ResponseEntity::ok)
@@ -41,12 +41,9 @@ public class ArztpraxisRestController {
         var createdArztpraxis = arztpraxisService.createArztpraxis(
                 command.name(),
                 command.istKassenarzt(),
-                null, null, command.arztId(), null
+                String.valueOf(command.arztId()),
+                null
         );
         return new ArztpraxisDto(createdArztpraxis);
     }
-
-
-
-
 }

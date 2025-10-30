@@ -1,42 +1,37 @@
 package com.example.zellervandecastellpatientenverwaltung.domain;
 
-import com.example.zellervandecastellpatientenverwaltung.persistence.converter.EmailConverter;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Entity
-@SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-@DiscriminatorValue("M")
-@Table(name = "mitarbeiter")
+@AllArgsConstructor
+@SuperBuilder
+@Document(collection = "mitarbeiter")
 public class Mitarbeiter extends User {
 
-    @EmbeddedId
-    private MitarbeiterID mitarbeiterID;
+    @Id
+    private String id;
 
     @Min(value = 0, message = "Es gibt kein negatives Gehalt")
     @Max(value = 100000, message = "Das Gehalt ist zu hoch")
+    @Field("gehalt")
     private Long gehalt;
 
-    @Convert(converter = EmailConverter.class)
     @NotNull
+    @Field("email")
     private Email email;
 
-    @ManyToOne
-    @JoinColumn(name = "arztpraxis_id")
-    private Arztpraxis arztpraxis;
+    @Field("arztpraxisId")
+    private String arztpraxisId;
 
     @NotNull
+    @Field("apiKey")
     private String apiKey;
-
-    @Embeddable
-    public record MitarbeiterID(@GeneratedValue @NotNull Long id) {}
 }
