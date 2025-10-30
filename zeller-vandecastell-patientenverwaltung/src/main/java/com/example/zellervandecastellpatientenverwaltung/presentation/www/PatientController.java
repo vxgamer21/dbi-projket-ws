@@ -31,6 +31,7 @@ public class PatientController {
         patient.setAdresse(new Adresse());
         patient.setTelefonNummer(new TelefonNummer());
         model.addAttribute("patient", patient);
+
         return "patienten/form";
     }
 
@@ -57,8 +58,12 @@ public class PatientController {
                     patient.getVersicherungsart(),
                     patient.getAdresse(),
                     patient.getTelefonNummer()
+
+
             );
+            System.out.println("Patient gespeichert: " + savedPatient.getId());
             return "redirect:/www/patienten";
+
         } catch (Exception e) {
             model.addAttribute("error", "Fehler beim Speichern des Patienten: " + e.getMessage());
             return "patienten/form";

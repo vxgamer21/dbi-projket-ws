@@ -19,7 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Arzt extends User {
 
     @Id
-    private String id; // Mongo ObjectId (automatisch generiert)
+    private String id;
 
     @NotNull(message = "Fachgebiet muss gewählt werden")
     @Field("fachgebiet")

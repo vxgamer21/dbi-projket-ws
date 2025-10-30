@@ -136,7 +136,7 @@
                                 <strong th:text="${arzt.name}">Dr. Max Mustermann</strong><br>
                                 <small class="text-muted" th:text="${arzt.fachgebiet}">Allgemeinmedizin</small>
                             </div>
-                            <a th:href="@{'/www/aerzte/edit/' + ${arzt.arztId.id}}" class="btn btn-sm btn-outline-primary">
+                            <a th:href="@{'/www/aerzte/edit/' + ${arzt.id}}" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </div>
@@ -163,7 +163,7 @@
                                 <strong th:text="${patient.name}">Max Mustermann</strong><br>
                                 <small class="text-muted" th:text="${patient.svnr}">1234567890</small>
                             </div>
-                            <a th:href="@{'/www/patienten/edit/' + ${patient.patientID.id}}" class="btn btn-sm btn-outline-success">
+                            <a th:href="@{'/www/patienten/edit/' + ${patient.id}}" class="btn btn-sm btn-outline-success">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </div>
