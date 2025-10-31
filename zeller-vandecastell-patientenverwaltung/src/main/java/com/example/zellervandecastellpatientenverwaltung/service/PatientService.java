@@ -34,6 +34,9 @@ public class PatientService {
             throw new IllegalArgumentException("Versicherungsart darf nicht null sein.");
         }
 
+        String apiKey = ApiKeyGenerator.generateApiKey();
+        System.out.println("🔑 Neuer API-Key: " + apiKey);
+
         Patient patient = Patient.builder()
                 .name(name)
                 .gebDatum(gebDatum)
@@ -41,10 +44,8 @@ public class PatientService {
                 .versicherungsart(versicherungsart)
                 .adresse(adresse)
                 .telefonNummer(telefonnummer)
-                .apiKey(ApiKeyGenerator.generateApiKey())
+                .apiKey(apiKey)
                 .build();
-
-        System.out.println("Patient created: " + patient);
 
         return patientRepository.save(patient);
     }

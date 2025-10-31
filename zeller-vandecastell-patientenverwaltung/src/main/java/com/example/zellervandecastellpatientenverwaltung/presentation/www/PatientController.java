@@ -39,18 +39,21 @@ public class PatientController {
     public String save(@Valid @ModelAttribute("patient") Patient patient,
                        BindingResult result, Model model) {
 
-        if (patient.getAdresse() == null) patient.setAdresse(new Adresse());
-        if (patient.getTelefonNummer() == null) patient.setTelefonNummer(new TelefonNummer());
-
-        if (patient.getApiKey() == null || patient.getApiKey().trim().isEmpty()) {
-            patient.setApiKey(ApiKeyGenerator.generateApiKey());
-        }
-
         if (result.hasErrors()) {
+            System.err.println("❌ Validierungsfehler beim Speichern:");
+            result.getFieldErrors().forEach(err ->
+                    System.err.println("  -> " + err.getField() + ": " + err.getDefaultMessage())
+            );
+            result.getGlobalErrors().forEach(err ->
+                    System.err.println("  -> GLOBAL: " + err.getDefaultMessage())
+            );
+
+            // zeigt die Fehler auch im Template an
             return "patienten/form";
         }
 
         try {
+            patient.setApiKey(ApiKeyGenerator.generateApiKey());
             Patient savedPatient = patientService.createPatient(
                     patient.getName(),
                     patient.getGebDatum(),
@@ -58,17 +61,17 @@ public class PatientController {
                     patient.getVersicherungsart(),
                     patient.getAdresse(),
                     patient.getTelefonNummer()
-
-
             );
-            System.out.println("Patient gespeichert: " + savedPatient.getId());
-            return "redirect:/www/patienten";
 
+            System.out.println("✅ Patient gespeichert: " + savedPatient.getId());
+            return "redirect:/www/patienten";
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("error", "Fehler beim Speichern des Patienten: " + e.getMessage());
             return "patienten/form";
         }
     }
+
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable String id, Model model) {

@@ -36,6 +36,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+
         <!-- === SPRING DATA MONGODB === -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

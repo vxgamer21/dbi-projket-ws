@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @SuperBuilder
 @Document(collection = "patienten")
+@TypeAlias("Patient")
 public class Patient extends User {
 
     @Id
@@ -20,7 +22,7 @@ public class Patient extends User {
     @Field("versicherungsart")
     private Versicherungsart versicherungsart;
 
-    @NotNull
+
     @Field("apiKey")
     private String apiKey;
 }
