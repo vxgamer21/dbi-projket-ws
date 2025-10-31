@@ -14,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/www/behandlungen")
@@ -25,7 +27,19 @@ public class BehandlungController {
 
     @GetMapping
     public String getBehandlungen(Model model) {
-        model.addAttribute("behandlungen", behandlungService.getAll());
+        var behandlungen = behandlungService.getAll();
+
+        // Ärzte und Patienten mappen
+        var aerzte = arztService.getAll().stream()
+                .collect(Collectors.toMap(Arzt::getId, Arzt::getName));
+
+        var patienten = patientService.getAll().stream()
+                .collect(Collectors.toMap(Patient::getId, Patient::getName));
+
+        model.addAttribute("behandlungen", behandlungen);
+        model.addAttribute("aerzteMap", aerzte);
+        model.addAttribute("patientenMap", patienten);
+
         return "behandlungen/index";
     }
 
@@ -45,12 +59,12 @@ public class BehandlungController {
                 .orElseThrow(() -> new NotFoundException("Behandlung mit ID " + id + " nicht gefunden"));
 
         BehandlungFormDto dto = new BehandlungFormDto();
-        dto.setBehandlungId(Long.valueOf(behandlung.getId()));
+        dto.setId((behandlung.getId()));
         dto.setBeginn(behandlung.getBeginn());
         dto.setEnde(behandlung.getEnde());
         dto.setDiagnose(behandlung.getDiagnose());
-        dto.setArztId(behandlung.getArztId() != null ? Long.valueOf(behandlung.getArztId()) : null);
-        dto.setPatientId(behandlung.getPatientId() != null ? Long.valueOf(behandlung.getPatientId()) : null);
+        dto.setArztId(behandlung.getArztId() != null ? (behandlung.getArztId()) : null);
+        dto.setPatientId(behandlung.getPatientId() != null ? (behandlung.getPatientId()) : null);
 
         model.addAttribute("behandlung", dto);
         model.addAttribute("aerzte", arztService.getAll());

@@ -26,12 +26,12 @@ public class BehandlungFormDto {
     private String diagnose;
 
     @NotNull
-    private Long arztId;
+    private String arztId;
 
     @NotNull
-    private Long patientId;
+    private String patientId;
 
-    private Long behandlungId;
+    private String id;
 
     public String getBeginnFormatted() {
         return beginn != null ? beginn.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")) : "";
