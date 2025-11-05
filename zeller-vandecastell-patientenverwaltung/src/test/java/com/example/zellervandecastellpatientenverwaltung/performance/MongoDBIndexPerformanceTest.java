@@ -32,7 +32,7 @@ class MongoDBIndexPerformanceTest {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private static final int TEST_DATA_SIZE = 50000;
+    private static final int TEST_DATA_SIZE = 100000;
     private PerformanceMetrics metricsWithoutIndex;
     private PerformanceMetrics metricsWithIndex;
 
@@ -48,7 +48,7 @@ class MongoDBIndexPerformanceTest {
 
     @Test
     @Order(1)
-    @DisplayName("1. Testdaten erstellen (50.000 Ärzte)")
+    @DisplayName("1. Testdaten erstellen (100.000 Ärzte)")
     void createTestData() {
         System.out.println("\n--- Erstelle " + TEST_DATA_SIZE + " Ärzte für Index-Tests ---");
 

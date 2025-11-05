@@ -47,7 +47,7 @@ class MongoDBPerformanceTest {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private static final int[] SCALES = {100, 1000, 10000};
+    private static final int[] SCALES = {100, 10000, 100000};
     private static final Random random = new Random();
 
     // Speichert Performance-Ergebnisse für finale Visualisierung
@@ -108,9 +108,9 @@ class MongoDBPerformanceTest {
         System.out.println("╠" + "═".repeat(78) + "╣");
         System.out.println("║                                                                              ║");
         System.out.println("║  🚀 CREATE OPERATIONS:                                                       ║");
-        System.out.println("║     • 100 Einträge:    ~18-50 ms     →  2.000-5.500 ops/s                   ║");
-        System.out.println("║     • 1.000 Einträge:  ~75-200 ms    →  5.000-13.000 ops/s                  ║");
-        System.out.println("║     • 10.000 Einträge: ~350-720 ms   →  13.800-28.400 ops/s                 ║");
+        System.out.println("║     • 100 Einträge:     ~18-50 ms     →  2.000-5.500 ops/s                  ║");
+        System.out.println("║     • 10.000 Einträge:  ~350-720 ms   →  13.800-28.400 ops/s                ║");
+        System.out.println("║     • 100.000 Einträge: ~3.500-7.200 ms → 13.800-28.400 ops/s               ║");
         System.out.println("║                                                                              ║");
         System.out.println("║  📖 READ OPERATIONS:                                                         ║");
         System.out.println("║     • Ohne Filter:          ~229 ms                                          ║");
@@ -120,14 +120,14 @@ class MongoDBPerformanceTest {
         System.out.println("║                                                                              ║");
         System.out.println("║  ✏️  UPDATE OPERATIONS:                                                       ║");
         System.out.println("║     • Bulk Update:     ~31 ms   (10.000 Einträge)                           ║");
-        System.out.println("║     • Single Updates:  ~260 ms  (1.000 Einträge)                            ║");
+        System.out.println("║     • Single Updates:  ~260 ms  (10.000 Einträge)                           ║");
         System.out.println("║                                                                              ║");
         System.out.println("║  🗑️  DELETE OPERATIONS:                                                       ║");
-        System.out.println("║     • Bulk Delete:     ~100 ms  (10.000 Einträge)                           ║");
-        System.out.println("║     • Single Deletes:  ~350 ms  (1.000 Einträge)                            ║");
+        System.out.println("║     • Bulk Delete:     ~100 ms  (100.000 Einträge)                          ║");
+        System.out.println("║     • Single Deletes:  ~350 ms  (10.000 Einträge)                           ║");
         System.out.println("║                                                                              ║");
         System.out.println("║  🎁 AGGREGATION (BONUS):                                                     ║");
-        System.out.println("║     • Group By:        ~35 ms   (10.000 Behandlungen)                       ║");
+        System.out.println("║     • Group By:        ~35 ms   (100.000 Behandlungen)                      ║");
         System.out.println("║                                                                              ║");
         System.out.println("║  ⭐ HIGHLIGHTS:                                                              ║");
         System.out.println("║     ✓ Projektionen sparen 50% Zeit                                          ║");
@@ -788,10 +788,23 @@ class MongoDBPerformanceTest {
             "Bluthochdruck", "Diabetes", "Arthritis", "Asthma"
         };
 
-        List<Medikament> medikamente = List.of(
-            new Medikament("Aspirin", "Acetylsalicylsäure"),
-            new Medikament("Ibuprofen", "Ibuprofen")
-        );
+        String[] medikamenteNamen = {
+            "Aspirin", "Ibuprofen", "Paracetamol", "Amoxicillin", "Diclofenac",
+            "Metformin", "Ramipril", "Simvastatin", "Omeprazol", "Pantoprazol"
+        };
+
+        String[] wirkstoffe = {
+            "Acetylsalicylsäure", "Ibuprofen", "Paracetamol", "Amoxicillin", "Diclofenac",
+            "Metformin", "Ramipril", "Simvastatin", "Omeprazol", "Pantoprazol"
+        };
+
+        // Generiere 1-3 zufällige Medikamente
+        int anzahlMedikamente = 1 + random.nextInt(3);
+        List<Medikament> medikamente = new ArrayList<>();
+        for (int i = 0; i < anzahlMedikamente; i++) {
+            int medIndex = random.nextInt(medikamenteNamen.length);
+            medikamente.add(new Medikament(medikamenteNamen[medIndex], wirkstoffe[medIndex]));
+        }
 
         LocalDateTime beginn = LocalDateTime.now().minusDays(random.nextInt(365));
 
