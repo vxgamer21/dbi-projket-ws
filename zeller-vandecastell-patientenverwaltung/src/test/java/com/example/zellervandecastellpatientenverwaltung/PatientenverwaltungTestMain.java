@@ -25,19 +25,10 @@ public class PatientenverwaltungTestMain {
     @Bean
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
-        final Integer containerPort = 5432;
-
-        PortBinding portBinding = new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(containerPort));
         return new PostgreSQLContainer<>(DockerImageName.parse(image))
-                .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(containerName);
-                    cmd.withHostConfig(new HostConfig().withPortBindings(portBinding));
-                })
                 .withUsername(username)
                 .withPassword(password)
-                .withDatabaseName(dbName)
-                .withReuse(true);
-
+                .withDatabaseName(dbName);
     }
 
     public static void main(String[] args) {

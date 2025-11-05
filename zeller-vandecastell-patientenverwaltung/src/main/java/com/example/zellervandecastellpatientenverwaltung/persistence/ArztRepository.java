@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface ArztRepository extends JpaRepository<Arzt, Arzt.ArztId> {
     Optional<Arzt> findByNameIgnoreCase(String name);
     Optional<Arzt> findById(Arzt.ArztId id);
+    List<Arzt> findByNameContainingIgnoreCase(String name);
 
     List<ArztDto> findAllProjectedBy();
 

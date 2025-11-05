@@ -19,7 +19,8 @@ public class Patient extends User {
     @EmbeddedId
     private PatientID patientID;
 
-    @Column(columnDefinition = "enum ('K','P')")
+    @Convert(converter = com.example.zellervandecastellpatientenverwaltung.persistence.converter.VersicherungsartConverter.class)
+    @Column(name = "versicherungsart", length = 1)
     public Versicherungsart versicherungsart;
 
 

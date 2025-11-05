@@ -24,7 +24,7 @@ public class Arzt extends User {
 
     @NotNull(message = "Fachgebiet muss gewählt werden")
     @Convert(converter = FachgebietConverter.class)
-    @Column(columnDefinition = FachgebietConverter.COLUMN_DEFINITION)
+    @Column(name = "fachgebiet", length = 1, nullable = false)
     public Fachgebiet fachgebiet;
 
     @Convert(converter = EmailConverter.class)
