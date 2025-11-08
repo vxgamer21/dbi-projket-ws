@@ -1,56 +1,48 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Patienten Übersicht</title>
+    <title>Patienten</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-
 <div th:replace="fragments/navbar :: navbar"></div>
-
 <div class="container mt-4">
-    <h1 class="mb-4">Patienten</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Patienten</h2>
+        <a class="btn btn-primary" th:href="@{/www/patienten/add}">Hinzufügen</a>
+    </div>
 
-    <a href="/www/patienten/add" class="btn btn-success mb-3">Neuen Patienten hinzufügen</a>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
 
     <table class="table table-striped">
         <thead>
         <tr>
+            <th>ID</th>
             <th>Name</th>
-            <th>Adresse</th>
-            <th>Versicherungsart</th>
-            <th>Telefon</th>
             <th>Geburtsdatum</th>
+            <th>SVNR</th>
             <th>Aktionen</th>
         </tr>
         </thead>
         <tbody>
         <tr th:if="${#lists.isEmpty(patienten)}">
-            <td colspan="6">Keine Patienten gefunden</td>
+            <td colspan="5">Keine Patienten gefunden</td>
         </tr>
-        <tr th:each="patient : ${patienten}">
-            <td th:text="${patient.name}">Name</td>
-            <td th:text="${patient.adresse.getStrasse() + ' ' + patient.adresse.getHausNr() + ', ' + patient.adresse.getPlz() + ' ' + patient.adresse.getStadt()}">Adresse</td>
-            <td th:text="${patient.versicherungsart}">Versicherungsart</td>
-            <td th:text="${patient.telefonNummer.getLkennzahl() + '' + patient.telefonNummer.getOkennzahl() + '' + patient.telefonNummer.getRufnummer()}">Telefon</td>
-            <td th:text="${patient.gebDatum}">Geburtsdatum</td>
+        <tr th:each="p : ${patienten}">
+            <td th:text="${p.id}">1</td>
+            <td th:text="${p.name}">Max Muster</td>
+            <td th:text="${p.gebDatum}">2000-01-01</td>
+            <td th:text="${p.svnr}">1234</td>
             <td>
-                <div class="d-flex gap-2">
-
-                <a th:href="@{/www/patienten/edit/{id}(id=${patient.id})}" class="btn btn-sm btn-primary">Bearbeiten</a>
-                <a th:href="@{/www/patienten/delete/{id}(id=${patient.id})}" class="btn btn-sm btn-danger"
-                   onclick="return confirm('Diesen Patienten wirklich löschen?');">Löschen</a>
-                </div>
+                <a class="btn btn-sm btn-primary" th:href="@{/www/patienten/edit/{id}(id=${p.id})}">Bearbeiten</a>
+                <a class="btn btn-sm btn-danger" th:href="@{/www/patienten/delete/{id}(id=${p.id})}" onclick="return confirm('Diesen Patienten wirklich löschen?');">Löschen</a>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
