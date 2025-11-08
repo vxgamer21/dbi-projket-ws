@@ -118,15 +118,15 @@ public class TestDataGenerator {
     /**
      * Generiert eine Liste von Behandlungen
      */
-    public static List<Behandlung> generateBehandlungen(int count, List<String> arztIds, List<String> patientIds) {
+    public static List<Behandlung> generateBehandlungen(int count, List<Arzt> aerzte, List<Patient> patienten) {
         List<Behandlung> behandlungen = new ArrayList<>();
 
-        if (arztIds.isEmpty() || patientIds.isEmpty()) {
-            throw new IllegalArgumentException("Arzt- und Patient-IDs müssen vorhanden sein");
+        if (aerzte.isEmpty() || patienten.isEmpty()) {
+            throw new IllegalArgumentException("Ärzte und Patienten müssen vorhanden sein");
         }
 
         for (int i = 0; i < count; i++) {
-            behandlungen.add(generateBehandlung(i, arztIds, patientIds));
+            behandlungen.add(generateBehandlung(i, aerzte, patienten));
         }
         return behandlungen;
     }
@@ -134,16 +134,16 @@ public class TestDataGenerator {
     /**
      * Generiert eine einzelne Behandlung
      */
-    public static Behandlung generateBehandlung(int index, List<String> arztIds, List<String> patientIds) {
-        String arztId = arztIds.get(random.nextInt(arztIds.size()));
-        String patientId = patientIds.get(random.nextInt(patientIds.size()));
+    public static Behandlung generateBehandlung(int index, List<Arzt> aerzte, List<Patient> patienten) {
+        Arzt arzt = aerzte.get(random.nextInt(aerzte.size()));
+        Patient patient = patienten.get(random.nextInt(patienten.size()));
 
         LocalDateTime beginn = generateBehandlungsDatum();
         int dauer = 15 + random.nextInt(120); // 15-135 Minuten
 
         return Behandlung.builder()
-            .arztId(arztId)
-            .patientId(patientId)
+            .arzt(arzt)
+            .patient(patient)
             .diagnose(DIAGNOSEN[random.nextInt(DIAGNOSEN.length)])
             .medikamente(generateMedikamente())
             .beginn(beginn)

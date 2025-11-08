@@ -39,8 +39,8 @@ public class RechnungService {
                 .betrag(betrag)
                 .datum(datum)
                 .bezahlt(bezahlt)
-                .arztId(arzt.getId())
-                .patientId(patient.getId())
+                .arzt(arzt)
+                .patient(patient)
                 .apiKey(apiKey)
                 .build();
 

@@ -8,8 +8,8 @@ public record RechnungDto(String patientId, String arztId, double betrag, boolea
 
     public RechnungDto(Rechnung r) {
         this(
-                r.getPatientId(),
-                r.getArztId(),
+                r.getPatient() != null ? r.getPatient().getId() : null,
+                r.getArzt() != null ? r.getArzt().getId() : null,
                 r.getBetrag(),
                 r.isBezahlt(),
                 r.getDatum()

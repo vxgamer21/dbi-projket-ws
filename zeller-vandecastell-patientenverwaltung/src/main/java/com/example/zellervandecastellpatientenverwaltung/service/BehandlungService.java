@@ -37,8 +37,8 @@ public class BehandlungService {
                 .beginn(beginn)
                 .ende(ende)
                 .diagnose(diagnose)
-                .arztId(arzt.getId())
-                .patientId(patient.getId())
+                .arzt(arzt)
+                .patient(patient)
                 .apiKey(apiKey)
                 .build();
 
@@ -65,13 +65,13 @@ public class BehandlungService {
         if (arztId != null) {
             Arzt arzt = arztRepository.findById(arztId)
                     .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
-            behandlung.setArztId(arzt.getId());
+            behandlung.setArzt(arzt);
         }
 
         if (patientId != null) {
             Patient patient = patientRepository.findById(patientId)
                     .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-            behandlung.setPatientId(patient.getId());
+            behandlung.setPatient(patient);
         }
 
         return behandlungRepository.save(behandlung);

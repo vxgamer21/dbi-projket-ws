@@ -11,8 +11,8 @@ public record BehandlungDto(LocalDateTime beginn, LocalDateTime ende, String dia
                 b.getBeginn(),
                 b.getEnde(),
                 b.getDiagnose(),
-                b.getArztId(),
-                b.getPatientId()
+                b.getArzt() != null ? b.getArzt().getId() : null,
+                b.getPatient() != null ? b.getPatient().getId() : null
         );
     }
 }

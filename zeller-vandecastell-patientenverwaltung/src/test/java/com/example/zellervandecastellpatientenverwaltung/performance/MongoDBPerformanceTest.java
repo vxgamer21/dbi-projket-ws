@@ -57,6 +57,10 @@ class MongoDBPerformanceTest {
     private final List<String> patientIds = new ArrayList<>();
     private final List<String> behandlungIds = new ArrayList<>();
 
+    // Listen für die eigentlichen Objekte (für embedded Behandlungen)
+    private final List<Arzt> aerzteListe = new ArrayList<>();
+    private final List<Patient> patientenListe = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
         System.out.println("\n" + "=".repeat(80));
@@ -73,6 +77,8 @@ class MongoDBPerformanceTest {
         arztIds.clear();
         patientIds.clear();
         behandlungIds.clear();
+        aerzteListe.clear();
+        patientenListe.clear();
     }
 
     @AfterAll
@@ -696,10 +702,10 @@ class MongoDBPerformanceTest {
         // Aggregation mit MongoTemplate
         long startTime = System.nanoTime();
 
-        // Gruppierung nach ArztId mit Count
+         // Gruppierung nach Arzt.id (embedded field) mit Count
         org.springframework.data.mongodb.core.aggregation.Aggregation agg =
             org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation(
-                org.springframework.data.mongodb.core.aggregation.Aggregation.group("arztId")
+                org.springframework.data.mongodb.core.aggregation.Aggregation.group("arzt.id")
                     .count().as("anzahlBehandlungen"),
                 org.springframework.data.mongodb.core.aggregation.Aggregation.sort(
                     Sort.Direction.DESC, "anzahlBehandlungen")
@@ -737,20 +743,28 @@ class MongoDBPerformanceTest {
         patientRepository.deleteAll();
         arztIds.clear();
         patientIds.clear();
+        aerzteListe.clear();
+        patientenListe.clear();
 
         List<Arzt> aerzte = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             aerzte.add(generateArzt(i));
         }
         List<Arzt> savedAerzte = arztRepository.saveAll(aerzte);
-        savedAerzte.forEach(a -> arztIds.add(a.getId()));
+        savedAerzte.forEach(a -> {
+            arztIds.add(a.getId());
+            aerzteListe.add(a);
+        });
 
         List<Patient> patienten = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             patienten.add(generatePatient(i));
         }
         List<Patient> savedPatienten = patientRepository.saveAll(patienten);
-        savedPatienten.forEach(p -> patientIds.add(p.getId()));
+        savedPatienten.forEach(p -> {
+            patientIds.add(p.getId());
+            patientenListe.add(p);
+        });
     }
 
     private Arzt generateArzt(int index) {
@@ -808,9 +822,13 @@ class MongoDBPerformanceTest {
 
         LocalDateTime beginn = LocalDateTime.now().minusDays(random.nextInt(365));
 
+        // Verwende direkt Objekte aus den Listen (embedded statt DB-Referenz)
+        Arzt arzt = aerzteListe.get(random.nextInt(aerzteListe.size()));
+        Patient patient = patientenListe.get(random.nextInt(patientenListe.size()));
+
         return Behandlung.builder()
-            .arztId(arztIds.isEmpty() ? "dummy-arzt" : arztIds.get(random.nextInt(arztIds.size())))
-            .patientId(patientIds.isEmpty() ? "dummy-patient" : patientIds.get(random.nextInt(patientIds.size())))
+            .arzt(arzt)
+            .patient(patient)
             .diagnose(diagnosen[random.nextInt(diagnosen.length)])
             .medikamente(medikamente)
             .beginn(beginn)
