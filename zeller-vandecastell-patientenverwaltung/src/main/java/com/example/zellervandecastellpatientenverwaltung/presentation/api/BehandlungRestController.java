@@ -1,6 +1,7 @@
 package com.example.zellervandecastellpatientenverwaltung.presentation.api;
 
 import com.example.zellervandecastellpatientenverwaltung.dtos.BehandlungDto;
+import com.example.zellervandecastellpatientenverwaltung.dtos.BehandlungFormDto;
 import com.example.zellervandecastellpatientenverwaltung.exceptions.NotFoundException;
 import com.example.zellervandecastellpatientenverwaltung.service.BehandlungService;
 import lombok.RequiredArgsConstructor;

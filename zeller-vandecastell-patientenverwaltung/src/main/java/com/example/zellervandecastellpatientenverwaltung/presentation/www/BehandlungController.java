@@ -63,8 +63,8 @@ public class BehandlungController {
         dto.setBeginn(behandlung.getBeginn());
         dto.setEnde(behandlung.getEnde());
         dto.setDiagnose(behandlung.getDiagnose());
-        dto.setArztId(behandlung.getArztId() != null ? (behandlung.getArztId()) : null);
-        dto.setPatientId(behandlung.getPatientId() != null ? (behandlung.getPatientId()) : null);
+        dto.setArztId(behandlung.getArzt() != null ? (behandlung.getArzt().getId()) : null);
+        dto.setPatientId(behandlung.getPatient() != null ? (behandlung.getPatient().getId()) : null);
 
         model.addAttribute("behandlung", dto);
         model.addAttribute("aerzte", arztService.getAll());

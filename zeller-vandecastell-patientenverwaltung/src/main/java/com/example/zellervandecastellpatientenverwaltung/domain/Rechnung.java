@@ -19,12 +19,12 @@ public class Rechnung {
     private String id;
 
     @NotNull
-    @Field("patientId")
-    private String patientId;
+    @Field("patient")
+    private Patient patient;
 
     @NotNull
-    @Field("arztId")
-    private String arztId;
+    @Field("arzt")
+    private Arzt arzt;
 
     @DecimalMin(value = "0.0", inclusive = false)
     @DecimalMax(value = "10000.0", inclusive = true)

@@ -3,14 +3,12 @@ package com.example.zellervandecastellpatientenverwaltung.domain;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "adressen")
 public class Adresse {
 
     @Field("strasse")

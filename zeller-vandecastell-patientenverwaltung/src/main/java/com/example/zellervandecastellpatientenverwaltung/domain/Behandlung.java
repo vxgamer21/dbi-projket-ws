@@ -20,12 +20,12 @@ public class Behandlung {
     private String id;
 
     @NotNull
-    @Field("arztId")
-    private String arztId;
+    @Field("arzt")
+    private Arzt arzt;
 
     @NotNull
-    @Field("patientId")
-    private String patientId;
+    @Field("patient")
+    private Patient patient;
 
     @Field("behandlungsraumId")
     private String behandlungsraumId;

@@ -73,8 +73,8 @@ public class FixturesFactory {
 
         return Behandlung.builder()
                 .behandlungsraumId("1")
-                .patientId("2")
-                .arztId("3")
+                .patient(PatientMaxMustermann())
+                .arzt(ArztAllgemein())
                 .apiKey(apiKey)
                 .build();
     }
