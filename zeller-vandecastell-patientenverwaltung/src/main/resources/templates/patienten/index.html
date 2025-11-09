@@ -33,9 +33,9 @@
         </tr>
         <tr th:each="patient : ${patienten}">
             <td th:text="${patient.name}">Name</td>
-            <td th:text="${patient.adresse.getStrasse() + ' ' + patient.adresse.getHausNr() + ', ' + patient.adresse.getPlz() + ' ' + patient.adresse.getStadt()}">Adresse</td>
+            <td th:text="${patient.adresse != null ? (patient.adresse.getStrasse() + ' ' + patient.adresse.getHausNr() + ', ' + patient.adresse.getPlz() + ' ' + patient.adresse.getStadt()) : 'Keine Adresse'}">Adresse</td>
             <td th:text="${patient.versicherungsart}">Versicherungsart</td>
-            <td th:text="${patient.telefonNummer.getLkennzahl() + '' + patient.telefonNummer.getOkennzahl() + '' + patient.telefonNummer.getRufnummer()}">Telefon</td>
+            <td th:text="${patient.telefonNummer != null ? (patient.telefonNummer.getLkennzahl() + '' + patient.telefonNummer.getOkennzahl() + '' + patient.telefonNummer.getRufnummer()) : 'Keine Telefonnummer'}">Telefon</td>
             <td th:text="${patient.gebDatum}">Geburtsdatum</td>
             <td>
                 <div class="d-flex gap-2">

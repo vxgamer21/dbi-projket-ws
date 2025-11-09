@@ -33,9 +33,9 @@
         </tr>
         <tr th:each="arzt : ${aerzte}">
             <td th:text="${arzt.name}">Name</td>
-            <td th:text="${arzt.adresse.getStrasse() + ' ' + arzt.adresse.getHausNr() + ', ' + arzt.adresse.getPlz() + ' ' + arzt.adresse.getStadt()}">Adresse</td>
+            <td th:text="${arzt.adresse != null ? (arzt.adresse.getStrasse() + ' ' + arzt.adresse.getHausNr() + ', ' + arzt.adresse.getPlz() + ' ' + arzt.adresse.getStadt()) : 'Keine Adresse'}">Adresse</td>
             <td th:text="${arzt.fachgebiet}">Fachgebiet</td>
-            <td th:text="${arzt.telefonNummer.getLkennzahl() + '' + arzt.telefonNummer.getOkennzahl() + '' + arzt.telefonNummer.getRufnummer()}">Telefon</td>
+            <td th:text="${arzt.telefonNummer != null ? (arzt.telefonNummer.getLkennzahl() + '' + arzt.telefonNummer.getOkennzahl() + '' + arzt.telefonNummer.getRufnummer()) : 'Keine Telefonnummer'}">Telefon</td>
             <td th:text="${arzt.gebDatum}">Geburtsdatum</td>
             <td>
                 <div class="d-flex gap-2">
