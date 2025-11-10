@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
@@ -21,10 +22,16 @@ public class Behandlung {
 
     @NotNull
     @Field("arzt")
+    @DocumentReference(lazy = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Arzt arzt;
 
     @NotNull
     @Field("patient")
+    @DocumentReference(lazy = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Patient patient;
 
     @Field("behandlungsraumId")

@@ -6,7 +6,11 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Arzt-Dokument für MongoDB
@@ -28,6 +32,13 @@ public class Arzt extends User {
     @Field("email")
     @Indexed(unique = true)
     private Email email;
+
+    @Builder.Default
+    @Field("behandlungen")
+    @DocumentReference(lazy = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Behandlung> behandlungen = new ArrayList<>();
 
     @Field("apiKey")
     private String apiKey;
