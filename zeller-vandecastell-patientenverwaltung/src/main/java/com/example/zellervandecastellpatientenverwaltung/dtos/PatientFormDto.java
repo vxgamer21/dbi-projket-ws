@@ -1,6 +1,7 @@
 package com.example.zellervandecastellpatientenverwaltung.dtos;
 
-import com.example.zellervandecastellpatientenverwaltung.domain.*;
+import com.example.zellervandecastellpatientenverwaltung.domain.Adresse;
+import com.example.zellervandecastellpatientenverwaltung.domain.Versicherungsart;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,5 @@ public class PatientFormDto {
     private Long svnr;
     private Versicherungsart versicherungsart;
     private Adresse adresse = new Adresse();
-    private TelefonNummer telefonnummer = new TelefonNummer();
-
+    private TelefonNummerFormDto telefonnummer = new TelefonNummerFormDto();
 }

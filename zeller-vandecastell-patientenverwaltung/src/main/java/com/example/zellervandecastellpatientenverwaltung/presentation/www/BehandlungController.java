@@ -45,11 +45,12 @@ public class BehandlungController {
 
     @GetMapping("/add")
     public String createForm(Model model) {
-        model.addAttribute("behandlung", new Behandlung());
+        model.addAttribute("behandlung", new BehandlungFormDto());
         model.addAttribute("aerzte", arztService.getAll());
         model.addAttribute("patienten", patientService.getAll());
         return "behandlungen/form";
     }
+
 
 
 

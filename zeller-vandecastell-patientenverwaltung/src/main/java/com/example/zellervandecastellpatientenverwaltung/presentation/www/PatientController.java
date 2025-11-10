@@ -1,9 +1,11 @@
 package com.example.zellervandecastellpatientenverwaltung.presentation.www;
 
-import com.example.zellervandecastellpatientenverwaltung.domain.*;
+import com.example.zellervandecastellpatientenverwaltung.domain.Adresse;
+import com.example.zellervandecastellpatientenverwaltung.domain.Patient;
+import com.example.zellervandecastellpatientenverwaltung.domain.TelefonNummer;
 import com.example.zellervandecastellpatientenverwaltung.dtos.PatientFormDto;
+import com.example.zellervandecastellpatientenverwaltung.dtos.TelefonNummerFormDto;
 import com.example.zellervandecastellpatientenverwaltung.exceptions.NotFoundException;
-import com.example.zellervandecastellpatientenverwaltung.foundation.ApiKeyGenerator;
 import com.example.zellervandecastellpatientenverwaltung.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,61 +29,71 @@ public class PatientController {
 
     @GetMapping("/add")
     public String createForm(Model model) {
-        Patient patient = new Patient();
-        patient.setAdresse(new Adresse());
-        patient.setTelefonNummer(new TelefonNummer());
-        model.addAttribute("patient", patient);
-
+        PatientFormDto dto = new PatientFormDto();
+        dto.setAdresse(new Adresse());
+        dto.setTelefonnummer(new TelefonNummerFormDto());
+        model.addAttribute("patient", dto);
         return "patienten/form";
     }
 
     @PostMapping("/add")
-    public String save(@Valid @ModelAttribute("patient") Patient patient,
+    public String save(@Valid @ModelAttribute("patient") PatientFormDto patientDto,
                        BindingResult result, Model model) {
 
         if (result.hasErrors()) {
-            System.err.println("❌ Validierungsfehler beim Speichern:");
-            result.getFieldErrors().forEach(err ->
-                    System.err.println("  -> " + err.getField() + ": " + err.getDefaultMessage())
-            );
-            result.getGlobalErrors().forEach(err ->
-                    System.err.println("  -> GLOBAL: " + err.getDefaultMessage())
-            );
-
-            // zeigt die Fehler auch im Template an
             return "patienten/form";
         }
 
         try {
-            patient.setApiKey(ApiKeyGenerator.generateApiKey());
-            Patient savedPatient = patientService.createPatient(
-                    patient.getName(),
-                    patient.getGebDatum(),
-                    patient.getSvnr(),
-                    patient.getVersicherungsart(),
-                    patient.getAdresse(),
-                    patient.getTelefonNummer()
+            TelefonNummer tel = createTelefonNummerSafe(patientDto.getTelefonnummer() != null ? patientDto.getTelefonnummer().getValue() : null);
+
+            patientService.createPatient(
+                    patientDto.getName(),
+                    patientDto.getGeburtsdatum(),
+                    patientDto.getSvnr(),
+                    patientDto.getVersicherungsart(),
+                    patientDto.getAdresse(),
+                    tel
             );
 
-            System.out.println("✅ Patient gespeichert: " + savedPatient.getId());
             return "redirect:/www/patienten";
         } catch (Exception e) {
-            e.printStackTrace();
             model.addAttribute("error", "Fehler beim Speichern des Patienten: " + e.getMessage());
             return "patienten/form";
         }
     }
-
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable String id, Model model) {
         Patient patient = patientService.getPatient(id)
                 .orElseThrow(() -> new NotFoundException("Patient mit ID " + id + " nicht gefunden"));
 
-        if (patient.getAdresse() == null) patient.setAdresse(new Adresse());
-        if (patient.getTelefonNummer() == null) patient.setTelefonNummer(new TelefonNummer());
+        PatientFormDto dto = new PatientFormDto();
+        dto.setPatientId(Long.valueOf(patient.getId()));
+        dto.setName(patient.getName());
+        dto.setGeburtsdatum(patient.getGebDatum());
+        dto.setSvnr(patient.getSvnr());
+        dto.setVersicherungsart(patient.getVersicherungsart());
+        dto.setAdresse(patient.getAdresse());
 
-        model.addAttribute("patient", patient);
+        TelefonNummerFormDto telDto = new TelefonNummerFormDto();
+        try {
+            if (patient.getTelefonNummer() != null) {
+                try {
+                    var m = TelefonNummer.class.getMethod("getValue");
+                    Object v = m.invoke(patient.getTelefonNummer());
+                    if (v != null) telDto.setValue(String.valueOf(v));
+                } catch (NoSuchMethodException ignore) {
+                    var f = TelefonNummer.class.getDeclaredField("value");
+                    f.setAccessible(true);
+                    Object v = f.get(patient.getTelefonNummer());
+                    if (v != null) telDto.setValue(String.valueOf(v));
+                }
+            }
+        } catch (Exception ignore) {}
+        dto.setTelefonnummer(telDto);
+
+        model.addAttribute("patient", dto);
         return "patienten/form";
     }
 
@@ -95,6 +107,8 @@ public class PatientController {
         }
 
         try {
+            TelefonNummer tel = createTelefonNummerSafe(patientDto.getTelefonnummer() != null ? patientDto.getTelefonnummer().getValue() : null);
+
             patientService.updatePatient(
                     id,
                     patientDto.getName(),
@@ -102,7 +116,7 @@ public class PatientController {
                     patientDto.getSvnr(),
                     patientDto.getVersicherungsart(),
                     patientDto.getAdresse(),
-                    patientDto.getTelefonnummer()
+                    tel
             );
             return "redirect:/www/patienten";
         } catch (Exception e) {
@@ -115,5 +129,43 @@ public class PatientController {
     public String delete(@PathVariable String id) {
         patientService.deletePatient(id);
         return "redirect:/www/patienten";
+    }
+
+    private TelefonNummer createTelefonNummerSafe(String value) {
+        try {
+            if (value == null || value.isBlank()) return null;
+            try {
+                var m = TelefonNummer.class.getMethod("of", String.class);
+                return (TelefonNummer) m.invoke(null, value);
+            } catch (NoSuchMethodException ignored) {}
+            try {
+                var m = TelefonNummer.class.getMethod("from", String.class);
+                return (TelefonNummer) m.invoke(null, value);
+            } catch (NoSuchMethodException ignored) {}
+            try {
+                var ctor = TelefonNummer.class.getConstructor(String.class);
+                return (TelefonNummer) ctor.newInstance(value);
+            } catch (NoSuchMethodException ignored) {}
+            try {
+                var ctor0 = TelefonNummer.class.getDeclaredConstructor();
+                ctor0.setAccessible(true);
+                Object obj = ctor0.newInstance();
+                try {
+                    var setter = TelefonNummer.class.getMethod("setValue", String.class);
+                    setter.invoke(obj, value);
+                    return (TelefonNummer) obj;
+                } catch (NoSuchMethodException e) {
+                    var f = TelefonNummer.class.getDeclaredField("value");
+                    f.setAccessible(true);
+                    f.set(obj, value);
+                    return (TelefonNummer) obj;
+                }
+            } catch (NoSuchMethodException ignored) {}
+            throw new IllegalStateException("TelefonNummer kann nicht aus String erzeugt werden");
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
