@@ -23,6 +23,7 @@ public class BehandlungService {
     private final BehandlungRepository behandlungRepository;
     private final ArztRepository arztRepository;
     private final PatientRepository patientRepository;
+    private final EmbeddedDocumentMapper embeddedDocumentMapper;
 
     @Transactional
     public Behandlung createBehandlung(LocalDateTime beginn, LocalDateTime ende, String diagnose, String arztId, String patientId) {
@@ -38,8 +39,8 @@ public class BehandlungService {
                 .beginn(beginn)
                 .ende(ende)
                 .diagnose(diagnose)
-                .arzt(createEmbeddedArzt(arzt))
-                .patient(createEmbeddedPatient(patient))
+                .arzt(embeddedDocumentMapper.toEmbeddedArzt(arzt))
+                .patient(embeddedDocumentMapper.toEmbeddedPatient(patient))
                 .apiKey(apiKey)
                 .build();
 
@@ -83,8 +84,8 @@ public class BehandlungService {
         if (ende != null) behandlung.setEnde(ende);
         if (diagnose != null) behandlung.setDiagnose(diagnose);
 
-        behandlung.setArzt(createEmbeddedArzt(targetArzt));
-        behandlung.setPatient(createEmbeddedPatient(targetPatient));
+        behandlung.setArzt(embeddedDocumentMapper.toEmbeddedArzt(targetArzt));
+        behandlung.setPatient(embeddedDocumentMapper.toEmbeddedPatient(targetPatient));
 
         Behandlung saved = behandlungRepository.save(behandlung);
 
@@ -123,8 +124,10 @@ public class BehandlungService {
         List<Behandlung> behandlungen = patient.getBehandlungen();
         List<Behandlung> updated = behandlungen == null ? new ArrayList<>() : new ArrayList<>(behandlungen);
 
-        Behandlung embedded = createEmbeddedBehandlung(behandlung);
-        embedded.setPatient(createEmbeddedPatient(patient));
+        Behandlung embedded = embeddedDocumentMapper.toEmbeddedBehandlung(behandlung);
+        if (embedded != null) {
+            embedded.setPatient(embeddedDocumentMapper.toEmbeddedPatient(patient));
+        }
 
         boolean replaced = false;
         for (int i = 0; i < updated.size(); i++) {
@@ -178,8 +181,10 @@ public class BehandlungService {
         List<Behandlung> behandlungen = arzt.getBehandlungen();
         List<Behandlung> updated = behandlungen == null ? new ArrayList<>() : new ArrayList<>(behandlungen);
 
-        Behandlung embedded = createEmbeddedBehandlung(behandlung);
-        embedded.setArzt(createEmbeddedArzt(arzt));
+        Behandlung embedded = embeddedDocumentMapper.toEmbeddedBehandlung(behandlung);
+        if (embedded != null) {
+            embedded.setArzt(embeddedDocumentMapper.toEmbeddedArzt(arzt));
+        }
 
         boolean replaced = false;
         for (int i = 0; i < updated.size(); i++) {
@@ -231,69 +236,6 @@ public class BehandlungService {
 
     private String getArztId(Arzt arzt) {
         return arzt != null ? arzt.getId() : null;
-    }
-
-    private Behandlung createEmbeddedBehandlung(Behandlung behandlung) {
-        if (behandlung == null) {
-            return null;
-        }
-
-        return Behandlung.builder()
-                .id(behandlung.getId())
-                .arzt(createEmbeddedArzt(behandlung.getArzt()))
-                .patient(createEmbeddedPatient(behandlung.getPatient()))
-                .behandlungsraumId(behandlung.getBehandlungsraumId())
-                .medikamente(copyMedikamente(behandlung.getMedikamente()))
-                .beginn(behandlung.getBeginn())
-                .ende(behandlung.getEnde())
-                .diagnose(behandlung.getDiagnose())
-                .apiKey(behandlung.getApiKey())
-                .build();
-    }
-
-    private List<Medikament> copyMedikamente(List<Medikament> medikamente) {
-        if (medikamente == null) {
-            return null;
-        }
-
-        return new ArrayList<>(medikamente);
-    }
-
-    private Patient createEmbeddedPatient(Patient patient) {
-        if (patient == null) {
-            return null;
-        }
-
-        return Patient.builder()
-                .id(patient.getId())
-                .name(patient.getName())
-                .gebDatum(patient.getGebDatum())
-                .svnr(patient.getSvnr())
-                .adresse(patient.getAdresse())
-                .telefonNummer(patient.getTelefonNummer())
-                .versicherungsart(patient.getVersicherungsart())
-                .apiKey(patient.getApiKey())
-                .behandlungen(new ArrayList<>())
-                .build();
-    }
-
-    private Arzt createEmbeddedArzt(Arzt arzt) {
-        if (arzt == null) {
-            return null;
-        }
-
-        return Arzt.builder()
-                .id(arzt.getId())
-                .name(arzt.getName())
-                .gebDatum(arzt.getGebDatum())
-                .svnr(arzt.getSvnr())
-                .adresse(arzt.getAdresse())
-                .telefonNummer(arzt.getTelefonNummer())
-                .fachgebiet(arzt.getFachgebiet())
-                .email(arzt.getEmail())
-                .apiKey(arzt.getApiKey())
-                .behandlungen(new ArrayList<>())
-                .build();
     }
 
     private Optional<Patient> findPatientById(String patientId) {
