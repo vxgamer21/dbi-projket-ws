@@ -152,44 +152,44 @@
             <legend>Adresse</legend>
             <div class="mb-2">
                 <label for="strasse-edit" class="form-label">Straße</label>
+                <input type="text" name="adresse.strasse" th:value="${arzt.adresse.strasse}" class="form-control" id="strasse-edit" required>
+            </div>
                 <input type="text" th:field="*{adresse.strasse}" class="form-control" id="strasse-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="hausnr-edit" class="form-label">Hausnummer</label>
+                <input type="text" name="adresse.hausNr" th:value="${arzt.adresse.hausNr}" class="form-control" id="hausnr-edit" required>
+            </div>
                 <input type="text" th:field="*{adresse.hausNr}" class="form-control" id="hausnr-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="plz-edit" class="form-label">PLZ</label>
+                <input type="text" name="adresse.plz" th:value="${arzt.adresse.plz}" class="form-control" id="plz-edit" required>
+            </div>
                 <input type="text" th:field="*{adresse.plz}" class="form-control" id="plz-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="stadt-edit" class="form-label">Stadt</label>
-                <input type="text" th:field="*{adresse.stadt}" class="form-control" id="stadt-edit" required>
+                <input type="text" name="adresse.stadt" th:value="${arzt.adresse.stadt}" class="form-control" id="stadt-edit" required>
             </div>
-        </fieldset>
+                <input type="text" th:field="*{adresse.stadt}" class="form-control" id="stadt-edit" required>
 
         <fieldset class="mb-3">
             <legend>Telefonnummer</legend>
             <div class="mb-2">
                 <label for="lkennzahl-edit" class="form-label">Landeskennzahl</label>
+                <input type="text" name="telefonnummer.lkennzahl" th:value="${arzt.telefonnummer.lkennzahl}" class="form-control" id="lkennzahl-edit" required>
+            </div>
                 <input type="text" th:field="*{telefonNummer.lkennzahl}" class="form-control" id="lkennzahl-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="okennzahl-edit" class="form-label">Ortskennzahl</label>
+                <input type="text" name="telefonnummer.okennzahl" th:value="${arzt.telefonnummer.okennzahl}" class="form-control" id="okennzahl-edit" required>
+            </div>
                 <input type="text" th:field="*{telefonNummer.okennzahl}" class="form-control" id="okennzahl-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="rufnummer-edit" class="form-label">Rufnummer</label>
+                <input type="text" name="telefonnummer.rufnummer" th:value="${arzt.telefonnummer.rufnummer}" class="form-control" id="rufnummer-edit" required>
+            </div>
                 <input type="text" th:field="*{telefonNummer.rufnummer}" class="form-control" id="rufnummer-edit" required>
-            </div>
-            <div class="mb-2">
                 <label for="art-edit" class="form-label">Art</label>
-                <select th:field="*{telefonNummer.art}" class="form-select" id="art-edit" required>
+                <select name="telefonnummer.art" class="form-select" id="art-edit" required>
                     <option value="" disabled>Bitte wählen…</option>
-                    <option th:each="art : ${T(com.example.zellervandecastellpatientenverwaltung.domain.TelefonNummerArt).values()}"
+                <select th:field="*{telefonNummer.art}" class="form-select" id="art-edit" required>
+                            th:value="${art}" th:text="${art}"
+                            th:selected="${arzt.telefonnummer.art == art}"></option>
                             th:value="${art}" th:text="${art}"></option>
-                </select>
-            </div>
         </fieldset>
 
         <div class="d-flex justify-content-between">
