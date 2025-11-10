@@ -6,7 +6,6 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ public class Arzt extends User {
 
     @Builder.Default
     @Field("behandlungen")
-    @DocumentReference(lazy = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Behandlung> behandlungen = new ArrayList<>();

@@ -38,8 +38,8 @@ public class BehandlungService {
                 .beginn(beginn)
                 .ende(ende)
                 .diagnose(diagnose)
-                .arzt(arzt)
-                .patient(patient)
+                .arzt(createEmbeddedArzt(arzt))
+                .patient(createEmbeddedPatient(patient))
                 .apiKey(apiKey)
                 .build();
 
@@ -64,36 +64,41 @@ public class BehandlungService {
         Behandlung behandlung = behandlungRepository.findById(behandlungId)
                 .orElseThrow(() -> new IllegalArgumentException("Behandlung not found"));
 
-        Patient previousPatient = behandlung.getPatient();
-        Arzt previousArzt = behandlung.getArzt();
+        String previousPatientId = getPatientId(behandlung.getPatient());
+        String previousArztId = getArztId(behandlung.getArzt());
+
+        Patient targetPatient = patientId != null
+                ? patientRepository.findById(patientId)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found"))
+                : findPatientById(previousPatientId)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+
+        Arzt targetArzt = arztId != null
+                ? arztRepository.findById(arztId)
+                .orElseThrow(() -> new IllegalArgumentException("Arzt not found"))
+                : findArztById(previousArztId)
+                .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
 
         if (beginn != null) behandlung.setBeginn(beginn);
         if (ende != null) behandlung.setEnde(ende);
         if (diagnose != null) behandlung.setDiagnose(diagnose);
 
-        if (arztId != null) {
-            Arzt arzt = arztRepository.findById(arztId)
-                    .orElseThrow(() -> new IllegalArgumentException("Arzt not found"));
-            behandlung.setArzt(arzt);
-        }
-
-        if (patientId != null) {
-            Patient patient = patientRepository.findById(patientId)
-                    .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-            behandlung.setPatient(patient);
-        }
+        behandlung.setArzt(createEmbeddedArzt(targetArzt));
+        behandlung.setPatient(createEmbeddedPatient(targetPatient));
 
         Behandlung saved = behandlungRepository.save(behandlung);
 
-        if (!Objects.equals(getPatientId(previousPatient), getPatientId(saved.getPatient()))) {
-            unlinkBehandlungFromPatient(previousPatient, saved.getId());
+        if (!Objects.equals(previousPatientId, targetPatient.getId())) {
+            findPatientById(previousPatientId)
+                    .ifPresent(patient -> unlinkBehandlungFromPatient(patient, saved.getId()));
         }
-        linkBehandlungWithPatient(saved.getPatient(), saved);
+        linkBehandlungWithPatient(targetPatient, saved);
 
-        if (!Objects.equals(getArztId(previousArzt), getArztId(saved.getArzt()))) {
-            unlinkBehandlungFromArzt(previousArzt, saved.getId());
+        if (!Objects.equals(previousArztId, targetArzt.getId())) {
+            findArztById(previousArztId)
+                    .ifPresent(arzt -> unlinkBehandlungFromArzt(arzt, saved.getId()));
         }
-        linkBehandlungWithArzt(saved.getArzt(), saved);
+        linkBehandlungWithArzt(targetArzt, saved);
 
         return saved;
     }
@@ -104,8 +109,10 @@ public class BehandlungService {
                 .orElseThrow(() -> new IllegalArgumentException("Behandlung not found"));
         behandlungRepository.delete(behandlung);
 
-        unlinkBehandlungFromPatient(behandlung.getPatient(), behandlung.getId());
-        unlinkBehandlungFromArzt(behandlung.getArzt(), behandlung.getId());
+        findPatientById(getPatientId(behandlung.getPatient()))
+                .ifPresent(patient -> unlinkBehandlungFromPatient(patient, behandlung.getId()));
+        findArztById(getArztId(behandlung.getArzt()))
+                .ifPresent(arzt -> unlinkBehandlungFromArzt(arzt, behandlung.getId()));
     }
 
     private void linkBehandlungWithPatient(Patient patient, Behandlung behandlung) {
@@ -116,14 +123,25 @@ public class BehandlungService {
         List<Behandlung> behandlungen = patient.getBehandlungen();
         List<Behandlung> updated = behandlungen == null ? new ArrayList<>() : new ArrayList<>(behandlungen);
 
-        boolean alreadyLinked = updated.stream()
-                .anyMatch(existing -> Objects.equals(existing.getId(), behandlung.getId()));
+        Behandlung embedded = createEmbeddedBehandlung(behandlung);
+        embedded.setPatient(createEmbeddedPatient(patient));
 
-        if (!alreadyLinked) {
-            updated.add(behandlung);
-            patient.setBehandlungen(updated);
-            patientRepository.save(patient);
+        boolean replaced = false;
+        for (int i = 0; i < updated.size(); i++) {
+            Behandlung existing = updated.get(i);
+            if (Objects.equals(existing.getId(), embedded.getId())) {
+                updated.set(i, embedded);
+                replaced = true;
+                break;
+            }
         }
+
+        if (!replaced) {
+            updated.add(embedded);
+        }
+
+        patient.setBehandlungen(updated);
+        patientRepository.save(patient);
     }
 
     private void unlinkBehandlungFromPatient(Patient patient, String behandlungId) {
@@ -136,8 +154,15 @@ public class BehandlungService {
             return;
         }
 
-        List<Behandlung> updated = new ArrayList<>(behandlungen);
-        boolean removed = updated.removeIf(existing -> Objects.equals(existing.getId(), behandlungId));
+        List<Behandlung> updated = new ArrayList<>();
+        boolean removed = false;
+        for (Behandlung existing : behandlungen) {
+            if (Objects.equals(existing.getId(), behandlungId)) {
+                removed = true;
+                continue;
+            }
+            updated.add(existing);
+        }
 
         if (removed) {
             patient.setBehandlungen(updated);
@@ -153,14 +178,25 @@ public class BehandlungService {
         List<Behandlung> behandlungen = arzt.getBehandlungen();
         List<Behandlung> updated = behandlungen == null ? new ArrayList<>() : new ArrayList<>(behandlungen);
 
-        boolean alreadyLinked = updated.stream()
-                .anyMatch(existing -> Objects.equals(existing.getId(), behandlung.getId()));
+        Behandlung embedded = createEmbeddedBehandlung(behandlung);
+        embedded.setArzt(createEmbeddedArzt(arzt));
 
-        if (!alreadyLinked) {
-            updated.add(behandlung);
-            arzt.setBehandlungen(updated);
-            arztRepository.save(arzt);
+        boolean replaced = false;
+        for (int i = 0; i < updated.size(); i++) {
+            Behandlung existing = updated.get(i);
+            if (Objects.equals(existing.getId(), embedded.getId())) {
+                updated.set(i, embedded);
+                replaced = true;
+                break;
+            }
         }
+
+        if (!replaced) {
+            updated.add(embedded);
+        }
+
+        arzt.setBehandlungen(updated);
+        arztRepository.save(arzt);
     }
 
     private void unlinkBehandlungFromArzt(Arzt arzt, String behandlungId) {
@@ -173,8 +209,15 @@ public class BehandlungService {
             return;
         }
 
-        List<Behandlung> updated = new ArrayList<>(behandlungen);
-        boolean removed = updated.removeIf(existing -> Objects.equals(existing.getId(), behandlungId));
+        List<Behandlung> updated = new ArrayList<>();
+        boolean removed = false;
+        for (Behandlung existing : behandlungen) {
+            if (Objects.equals(existing.getId(), behandlungId)) {
+                removed = true;
+                continue;
+            }
+            updated.add(existing);
+        }
 
         if (removed) {
             arzt.setBehandlungen(updated);
@@ -188,5 +231,82 @@ public class BehandlungService {
 
     private String getArztId(Arzt arzt) {
         return arzt != null ? arzt.getId() : null;
+    }
+
+    private Behandlung createEmbeddedBehandlung(Behandlung behandlung) {
+        if (behandlung == null) {
+            return null;
+        }
+
+        return Behandlung.builder()
+                .id(behandlung.getId())
+                .arzt(createEmbeddedArzt(behandlung.getArzt()))
+                .patient(createEmbeddedPatient(behandlung.getPatient()))
+                .behandlungsraumId(behandlung.getBehandlungsraumId())
+                .medikamente(copyMedikamente(behandlung.getMedikamente()))
+                .beginn(behandlung.getBeginn())
+                .ende(behandlung.getEnde())
+                .diagnose(behandlung.getDiagnose())
+                .apiKey(behandlung.getApiKey())
+                .build();
+    }
+
+    private List<Medikament> copyMedikamente(List<Medikament> medikamente) {
+        if (medikamente == null) {
+            return null;
+        }
+
+        return new ArrayList<>(medikamente);
+    }
+
+    private Patient createEmbeddedPatient(Patient patient) {
+        if (patient == null) {
+            return null;
+        }
+
+        return Patient.builder()
+                .id(patient.getId())
+                .name(patient.getName())
+                .gebDatum(patient.getGebDatum())
+                .svnr(patient.getSvnr())
+                .adresse(patient.getAdresse())
+                .telefonNummer(patient.getTelefonNummer())
+                .versicherungsart(patient.getVersicherungsart())
+                .apiKey(patient.getApiKey())
+                .behandlungen(new ArrayList<>())
+                .build();
+    }
+
+    private Arzt createEmbeddedArzt(Arzt arzt) {
+        if (arzt == null) {
+            return null;
+        }
+
+        return Arzt.builder()
+                .id(arzt.getId())
+                .name(arzt.getName())
+                .gebDatum(arzt.getGebDatum())
+                .svnr(arzt.getSvnr())
+                .adresse(arzt.getAdresse())
+                .telefonNummer(arzt.getTelefonNummer())
+                .fachgebiet(arzt.getFachgebiet())
+                .email(arzt.getEmail())
+                .apiKey(arzt.getApiKey())
+                .behandlungen(new ArrayList<>())
+                .build();
+    }
+
+    private Optional<Patient> findPatientById(String patientId) {
+        if (patientId == null) {
+            return Optional.empty();
+        }
+        return patientRepository.findById(patientId);
+    }
+
+    private Optional<Arzt> findArztById(String arztId) {
+        if (arztId == null) {
+            return Optional.empty();
+        }
+        return arztRepository.findById(arztId);
     }
 }
