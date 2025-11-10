@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-/**
- * Utility-Klasse zum Generieren von Testdaten für Performance-Tests
- */
+
 public class TestDataGenerator {
 
     private static final Random random = new Random();
@@ -199,9 +197,7 @@ public class TestDataGenerator {
         return medikamente;
     }
 
-    /**
-     * Generiert ein zufälliges Geburtsdatum
-     */
+    //Generiert ein zufälliges Geburtsdatum
     private static LocalDate generateGeburtsdatum(int startYear, int endYear) {
         int year = startYear + random.nextInt(endYear - startYear + 1);
         int month = 1 + random.nextInt(12);
@@ -209,23 +205,20 @@ public class TestDataGenerator {
         return LocalDate.of(year, month, day);
     }
 
-    /**
-     * Generiert eine zufällige Sozialversicherungsnummer
-     */
+    //Generiert eine zufällige Sozialversicherungsnummer
+
     private static Long generateSVNR() {
         return 1000000000L + random.nextLong(9000000000L);
     }
 
-    /**
-     * Generiert ein Behandlungsdatum in den letzten 365 Tagen
-     */
+    //Generiert ein Behandlungsdatum in den letzten 365 Tagen
     private static LocalDateTime generateBehandlungsDatum() {
         return LocalDateTime.now().minusDays(random.nextInt(365));
     }
 
-    /**
-     * Generiert eine PLZ basierend auf der Stadt
-     */
+
+     //Generiert eine PLZ basierend auf der Stadt
+
     private static String generatePLZ(String stadt) {
         return switch (stadt) {
             case "Wien" -> String.format("1%03d", random.nextInt(240));
@@ -242,9 +235,8 @@ public class TestDataGenerator {
         };
     }
 
-    /**
-     * Gibt Statistiken über generierte Daten aus
-     */
+    //Gibt Statistiken über generierte Daten aus
+
     public static void printStatistics(int aerzte, int patienten, int behandlungen) {
         System.out.println("\n" + "=".repeat(80));
         System.out.println("TESTDATEN-STATISTIK");

@@ -35,8 +35,8 @@
             <td th:text="${behandlung.beginn}">Beginn</td>
             <td th:text="${behandlung.ende}">Ende</td>
             <td th:text="${behandlung.diagnose}">Diagnose</td>
-            <td th:text="${behandlung.getArzt().name}">Arzt</td>
-            <td th:text="${behandlung.getPatient().name}">Patient</td>
+            <td th:text="${behandlung.arzt != null ? behandlung.arzt.name : 'Kein Arzt'}">Arzt</td>
+            <td th:text="${behandlung.patient != null ? behandlung.patient.name : 'Kein Patient'}">Patient</td>
             <td>
                 <a th:href="@{/www/behandlungen/edit/{id}(id=${behandlung.id})}" class="btn btn-sm btn-primary">Bearbeiten</a>
                 <a th:href="@{/www/behandlungen/delete/{id}(id=${behandlung.id})}" class="btn btn-sm btn-danger"
