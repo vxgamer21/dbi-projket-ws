@@ -21,10 +21,14 @@ public class Behandlung {
 
     @NotNull
     @Field("arzt")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Arzt arzt;
 
     @NotNull
     @Field("patient")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Patient patient;
 
     @Field("behandlungsraumId")
