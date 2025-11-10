@@ -23,18 +23,20 @@
             <th>Name</th>
             <th>Geburtsdatum</th>
             <th>SVNR</th>
+            <th>Versicherungsart</th>
             <th>Aktionen</th>
         </tr>
         </thead>
         <tbody>
         <tr th:if="${#lists.isEmpty(patienten)}">
-            <td colspan="5">Keine Patienten gefunden</td>
+            <td colspan="6">Keine Patienten gefunden</td>
         </tr>
         <tr th:each="p : ${patienten}">
             <td th:text="${p.id}">1</td>
             <td th:text="${p.name}">Max Muster</td>
-            <td th:text="${p.gebDatum}">2000-01-01</td>
+            <td th:text="${p.gebDatum != null ? #temporals.format(p.gebDatum, 'dd.MM.yyyy') : '-'}">01.01.2000</td>
             <td th:text="${p.svnr}">1234</td>
+            <td th:text="${p.versicherungsart}">GKK</td>
             <td>
                 <a class="btn btn-sm btn-primary" th:href="@{/www/patienten/edit/{id}(id=${p.id})}">Bearbeiten</a>
                 <a class="btn btn-sm btn-danger" th:href="@{/www/patienten/delete/{id}(id=${p.id})}" onclick="return confirm('Diesen Patienten wirklich löschen?');">Löschen</a>

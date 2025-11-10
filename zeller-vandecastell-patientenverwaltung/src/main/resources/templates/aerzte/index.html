@@ -16,16 +16,18 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>ID</th><th>Name</th><th>Fachgebiet</th><th>E-Mail</th><th>Aktionen</th>
+            <th>ID</th><th>Name</th><th>Geburtsdatum</th><th>SVNR</th><th>Fachgebiet</th><th>E-Mail</th><th>Aktionen</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:if="${#lists.isEmpty(aerzte)}"><td colspan="5">Keine Ärzte gefunden</td></tr>
+        <tr th:if="${#lists.isEmpty(aerzte)}"><td colspan="7">Keine Ärzte gefunden</td></tr>
         <tr th:each="a : ${aerzte}">
             <td th:text="${a.id}">1</td>
             <td th:text="${a.name}">Dr. XY</td>
+            <td th:text="${a.gebDatum != null ? #temporals.format(a.gebDatum, 'dd.MM.yyyy') : '-'}">01.01.1980</td>
+            <td th:text="${a.svnr}">1234567890</td>
             <td th:text="${a.fachgebiet}">Fach</td>
-            <td th:text="${a.email != null ? a.email.value : ''}">mail</td>
+            <td th:text="${a.email != null ? a.email.mail : ''}">mail</td>
             <td>
                 <a class="btn btn-sm btn-primary" th:href="@{/www/aerzte/edit/{id}(id=${a.id})}">Bearbeiten</a>
                 <a class="btn btn-sm btn-danger" th:href="@{/www/aerzte/delete/{id}(id=${a.id})}" onclick="return confirm('Diesen Arzt wirklich löschen?');">Löschen</a>

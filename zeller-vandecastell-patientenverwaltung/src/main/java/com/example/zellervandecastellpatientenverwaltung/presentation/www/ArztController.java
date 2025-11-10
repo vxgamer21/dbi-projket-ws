@@ -5,8 +5,8 @@ import com.example.zellervandecastellpatientenverwaltung.domain.Arzt;
 import com.example.zellervandecastellpatientenverwaltung.domain.Email;
 import com.example.zellervandecastellpatientenverwaltung.domain.TelefonNummer;
 import com.example.zellervandecastellpatientenverwaltung.dtos.ArztFormDto;
+import com.example.zellervandecastellpatientenverwaltung.dtos.TelefonNummerFormDto;
 import com.example.zellervandecastellpatientenverwaltung.exceptions.NotFoundException;
-import com.example.zellervandecastellpatientenverwaltung.foundation.ApiKeyGenerator;
 import com.example.zellervandecastellpatientenverwaltung.service.ArztService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,38 +32,34 @@ public class ArztController {
 
     @GetMapping("/add")
     public String addForm(Model model) {
-        var arzt = new Arzt();
-        arzt.setAdresse(new Adresse());
-        arzt.setTelefonNummer(new TelefonNummer());
-        arzt.setEmail(new Email());
-        model.addAttribute("arzt", arzt);
+        ArztFormDto dto = new ArztFormDto();
+        dto.setAdresse(new Adresse());
+        dto.setTelefonnummer(new TelefonNummerFormDto());
+        dto.setEmail(new Email());
+        model.addAttribute("arzt", dto);
         return "aerzte/form";
     }
 
     @PostMapping("/add")
-    public String save(@Valid @ModelAttribute("arzt") Arzt arzt, BindingResult result, Model model) {
-
-        if (arzt.getEmail() == null) arzt.setEmail(new Email());
-        if (arzt.getAdresse() == null) arzt.setAdresse(new Adresse());
-        if (arzt.getTelefonNummer() == null) arzt.setTelefonNummer(new TelefonNummer());
-
-        if (arzt.getApiKey() == null || arzt.getApiKey().trim().isEmpty()) {
-            arzt.setApiKey(ApiKeyGenerator.generateApiKey());
-        }
+    public String save(@Valid @ModelAttribute("arzt") ArztFormDto arztDto, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "aerzte/form";
         }
 
         try {
+            TelefonNummer tel = TelefonNummer.fromString(
+                arztDto.getTelefonnummer() != null ? arztDto.getTelefonnummer().getValue() : null
+            );
+
             arztService.createArzt(
-                    arzt.getName(),
-                    arzt.getGebDatum(),
-                    arzt.getSvnr(),
-                    arzt.getFachgebiet(),
-                    arzt.getAdresse(),
-                    arzt.getTelefonNummer(),
-                    arzt.getEmail()
+                    arztDto.getName(),
+                    arztDto.getGeburtsdatum(),
+                    arztDto.getSvnr(),
+                    arztDto.getFachgebiet(),
+                    arztDto.getAdresse(),
+                    tel,
+                    arztDto.getEmail()
             );
             return "redirect:/www/aerzte";
         } catch (Exception e) {
@@ -73,21 +69,36 @@ public class ArztController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable String id, Model model) {
+    public String editForm(@PathVariable("id") String id, Model model) {
         Arzt arzt = arztService.getArzt(id)
                 .orElseThrow(() -> new NotFoundException("Arzt mit ID " + id + " nicht gefunden"));
 
-        if (arzt.getEmail() == null) arzt.setEmail(new Email());
-        if (arzt.getAdresse() == null) arzt.setAdresse(new Adresse());
-        if (arzt.getTelefonNummer() == null) arzt.setTelefonNummer(new TelefonNummer());
+        log.info("Arzt geladen - Name: {}, Geburtsdatum: {}", arzt.getName(), arzt.getGebDatum());
 
-        model.addAttribute("arzt", arzt);
+        ArztFormDto dto = new ArztFormDto();
+        dto.setArztid(arzt.getId());
+        dto.setName(arzt.getName());
+        dto.setGeburtsdatum(arzt.getGebDatum());
+        dto.setSvnr(arzt.getSvnr());
+        dto.setFachgebiet(arzt.getFachgebiet());
+        dto.setAdresse(arzt.getAdresse() != null ? arzt.getAdresse() : new Adresse());
+        dto.setEmail(arzt.getEmail() != null ? arzt.getEmail() : new Email());
+
+        TelefonNummerFormDto telDto = new TelefonNummerFormDto();
+        if (arzt.getTelefonNummer() != null) {
+            telDto.setValue(arzt.getTelefonNummer().toFormattedString());
+        }
+        dto.setTelefonnummer(telDto);
+
+        log.info("DTO erstellt - Geburtsdatum: {}", dto.getGeburtsdatum());
+
+        model.addAttribute("arzt", dto);
         return "aerzte/form";
     }
 
     @PostMapping("/edit/{id}")
-    public String update(@PathVariable String id,
-                         @Valid @ModelAttribute("arzt") ArztFormDto arzt,
+    public String update(@PathVariable("id") String id,
+                         @Valid @ModelAttribute("arzt") ArztFormDto arztDto,
                          BindingResult result, Model model) {
 
         if (result.hasErrors()) {
@@ -95,15 +106,19 @@ public class ArztController {
         }
 
         try {
+            TelefonNummer tel = TelefonNummer.fromString(
+                arztDto.getTelefonnummer() != null ? arztDto.getTelefonnummer().getValue() : null
+            );
+
             arztService.updateArzt(
                     id,
-                    arzt.getName(),
-                    arzt.getGeburtsdatum(),
-                    arzt.getSvnr(),
-                    arzt.getFachgebiet(),
-                    arzt.getAdresse(),
-                    arzt.getTelefonnummer(),
-                    arzt.getEmail()
+                    arztDto.getName(),
+                    arztDto.getGeburtsdatum(),
+                    arztDto.getSvnr(),
+                    arztDto.getFachgebiet(),
+                    arztDto.getAdresse(),
+                    tel,
+                    arztDto.getEmail()
             );
             return "redirect:/www/aerzte";
         } catch (Exception e) {
@@ -113,7 +128,7 @@ public class ArztController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable String id) {
+    public String delete(@PathVariable("id") String id) {
         arztService.deleteArzt(id);
         return "redirect:/www/aerzte";
     }

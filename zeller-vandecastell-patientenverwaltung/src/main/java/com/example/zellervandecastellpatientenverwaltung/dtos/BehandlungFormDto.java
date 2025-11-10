@@ -1,15 +1,11 @@
 package com.example.zellervandecastellpatientenverwaltung.dtos;
 
-import com.example.zellervandecastellpatientenverwaltung.domain.Adresse;
-import com.example.zellervandecastellpatientenverwaltung.domain.Email;
-import com.example.zellervandecastellpatientenverwaltung.domain.Fachgebiet;
-import com.example.zellervandecastellpatientenverwaltung.domain.TelefonNummer;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,10 +14,11 @@ import java.time.format.DateTimeFormatter;
 @Data
 public class BehandlungFormDto {
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime beginn;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime ende;
-
 
     private String diagnose;
 
@@ -40,6 +37,5 @@ public class BehandlungFormDto {
     public String getEndeFormatted() {
         return ende != null ? ende.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")) : "";
     }
-
 
 }
