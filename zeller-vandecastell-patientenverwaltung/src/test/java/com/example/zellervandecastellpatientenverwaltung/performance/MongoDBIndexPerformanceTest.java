@@ -52,7 +52,7 @@ class MongoDBIndexPerformanceTest {
     void createTestData() {
         System.out.println("\n--- Erstelle " + TEST_DATA_SIZE + " Ärzte für Index-Tests ---");
 
-        arztRepository.deleteAll();
+        // arztRepository.deleteAll();
 
         long startTime = System.nanoTime();
         List<Arzt> aerzte = TestDataGenerator.generateAerzte(TEST_DATA_SIZE);

@@ -72,20 +72,17 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.println("SETUP: Erstelle Testdaten (Ärzte und Patienten)");
         System.out.println("=".repeat(80));
 
-        // Cleanup
-        arztRepository.deleteAll();
-        patientRepository.deleteAll();
-        behandlungRepository.deleteAll();
-        behandlungReferencedRepository.deleteAll();
+        // arztRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
+        // patientRepository.deleteAll();
+        // behandlungRepository.deleteAll();
+        // behandlungReferencedRepository.deleteAll();
         aerzte.clear();
         patienten.clear();
 
-        // Ärzte erstellen
         System.out.printf("Erstelle %d Ärzte...%n", 100);
         List<Arzt> aerzteListe = TestDataGenerator.generateAerzte(100);
         aerzte.addAll(arztRepository.saveAll(aerzteListe));
 
-        // Patienten erstellen
         System.out.printf("Erstelle %d Patienten...%n", 100);
         List<Patient> patientenListe = TestDataGenerator.generatePatienten(100);
         patienten.addAll(patientRepository.saveAll(patientenListe));
@@ -99,7 +96,6 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.println("Referencing vs Embedding Performance Test");
         System.out.println("=".repeat(80));
 
-        // Sicherstellen dass Testdaten vorhanden sind
         if (aerzte.isEmpty() || patienten.isEmpty()) {
             throw new IllegalStateException("Testdaten nicht initialisiert! @BeforeAll wurde nicht ausgeführt.");
         }
@@ -126,54 +122,11 @@ class ReferencingVsEmbeddingPerformanceTest {
 
         System.out.println("╚" + "═".repeat(50) + "╧" + "═".repeat(27) + "╝");
 
-        // Vergleich und Empfehlungen
         printComparison();
     }
 
     private static void printComparison() {
-        System.out.println("\n╔" + "═".repeat(78) + "╗");
-        System.out.println("║" + " ".repeat(30) + "ANALYSE & FAZIT" + " ".repeat(33) + "║");
-        System.out.println("╠" + "═".repeat(78) + "╣");
-        System.out.println("║                                                                              ║");
-        System.out.println("║  📊 EMBEDDING (Behandlung mit embedded Arzt/Patient):                        ║");
-        System.out.println("║     ✅ Vorteile:                                                             ║");
-        System.out.println("║        • Sehr schnelle Reads (alles in einem Dokument)                      ║");
-        System.out.println("║        • Keine zusätzlichen Queries/JOINs nötig                             ║");
-        System.out.println("║        • Optimal für Read-Heavy Workloads                                   ║");
-        System.out.println("║        • Denormalisierung = Performance                                     ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║     ❌ Nachteile:                                                            ║");
-        System.out.println("║        • Redundanz: Arzt/Patient-Daten mehrfach gespeichert                ║");
-        System.out.println("║        • Updates kompliziert: Alle Behandlungen müssen aktualisiert werden  ║");
-        System.out.println("║        • Größere Dokumente = mehr Speicher                                  ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║  🔗 REFERENCING (BehandlungReferenced mit @DBRef):                          ║");
-        System.out.println("║     ✅ Vorteile:                                                             ║");
-        System.out.println("║        • Normalisierung: Arzt/Patient nur einmal gespeichert               ║");
-        System.out.println("║        • Updates einfach: Änderung an einer Stelle                          ║");
-        System.out.println("║        • Konsistenz garantiert                                              ║");
-        System.out.println("║        • Kleinere Dokumente                                                 ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║     ❌ Nachteile:                                                            ║");
-        System.out.println("║        • Langsamere Reads (zusätzliche Queries = JOIN-ähnlich)              ║");
-        System.out.println("║        • Netzwerk-Overhead                                                  ║");
-        System.out.println("║        • Komplexere Queries                                                 ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║  🎯 EMPFEHLUNG:                                                              ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║     USE EMBEDDING WHEN:                                                      ║");
-        System.out.println("║     • Daten zusammen gelesen werden (1:1 oder 1:N Beziehung)                ║");
-        System.out.println("║     • Read-Performance kritisch ist                                         ║");
-        System.out.println("║     • Embedded Daten sich selten ändern                                     ║");
-        System.out.println("║     • Beispiel: Adresse, Telefon, Medikamente in Behandlung                ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("║     USE REFERENCING WHEN:                                                    ║");
-        System.out.println("║     • Daten häufig aktualisiert werden                                      ║");
-        System.out.println("║     • Konsistenz wichtiger als Performance                                  ║");
-        System.out.println("║     • Große Dokumente vermieden werden sollen                               ║");
-        System.out.println("║     • M:N Beziehungen                                                        ║");
-        System.out.println("║                                                                              ║");
-        System.out.println("╚" + "═".repeat(78) + "╝");
+
         System.out.println();
     }
 
@@ -189,7 +142,6 @@ class ReferencingVsEmbeddingPerformanceTest {
     }
 
 
-    // ==================== WRITE PERFORMANCE ====================
 
     @Test
     @Order(1)
@@ -199,7 +151,7 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.println("WRITE PERFORMANCE - EMBEDDING");
         System.out.println("=".repeat(80));
 
-        behandlungRepository.deleteAll();
+        // behandlungRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
 
         System.out.printf("Erstelle %d Behandlungen mit embedded Arzt/Patient...%n", TEST_DATA_SIZE);
 
@@ -238,7 +190,7 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.println("WRITE PERFORMANCE - REFERENCING (@DBRef)");
         System.out.println("=".repeat(80));
 
-        behandlungReferencedRepository.deleteAll();
+        // behandlungReferencedRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
 
         System.out.printf("Erstelle %d Behandlungen mit @DBRef...%n", TEST_DATA_SIZE);
 
@@ -268,7 +220,6 @@ class ReferencingVsEmbeddingPerformanceTest {
 
         addResult("WRITE Referencing", duration);
 
-        // Vergleich
         double embeddingTime = performanceResults.get("WRITE Embedding");
         double speedup = embeddingTime / duration;
         System.out.printf("\n📊 Vergleich: Referencing ist %.2fx %s als Embedding%n",
@@ -297,7 +248,6 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.printf("✓ %d Behandlungen gelesen in %.2f ms%n", behandlungen.size(), duration);
         System.out.printf("  Durchschnitt: %.4f ms/Dokument%n", duration / behandlungen.size());
 
-        // Zeige ein Beispiel
         if (!behandlungen.isEmpty()) {
             Behandlung first = behandlungen.get(0);
             System.out.println("\n  Beispiel-Dokument:");
@@ -338,7 +288,6 @@ class ReferencingVsEmbeddingPerformanceTest {
 
         addResult("READ Referencing (findAll)", duration);
 
-        // Vergleich
         double embeddingTime = performanceResults.get("READ Embedding (findAll)");
         double speedup = embeddingTime / duration;
         double overhead = ((duration - embeddingTime) / embeddingTime) * 100;
@@ -419,17 +368,14 @@ class ReferencingVsEmbeddingPerformanceTest {
         System.out.printf("Ändere Arzt-Name: '%s' → '%s'%n", oldName, newName);
         System.out.println("⚠️  Bei EMBEDDING: Alle Behandlungen mit diesem Arzt müssen aktualisiert werden!");
 
-        // Finde alle Behandlungen mit diesem Arzt
         Query findQuery = new Query(Criteria.where("arzt._id").is(testArzt.getId()));
         List<Behandlung> behandlungenMitArzt = mongoTemplate.find(findQuery, Behandlung.class);
 
         System.out.printf("   Gefunden: %d Behandlungen mit diesem Arzt%n", behandlungenMitArzt.size());
 
-        // Update in Arzt-Collection
         testArzt.setName(newName);
         arztRepository.save(testArzt);
 
-        // Update in allen Behandlungen (notwendig bei Embedding!)
         long startTime = System.nanoTime();
 
         for (Behandlung behandlung : behandlungenMitArzt) {
@@ -445,7 +391,6 @@ class ReferencingVsEmbeddingPerformanceTest {
 
         addResult("UPDATE Embedding (cascade)", duration);
 
-        // Zurücksetzen
         testArzt.setName(oldName);
         arztRepository.save(testArzt);
     }
@@ -467,7 +412,6 @@ class ReferencingVsEmbeddingPerformanceTest {
 
         long startTime = System.nanoTime();
 
-        // Nur ein Update in Arzt-Collection
         testArzt.setName(newName);
         arztRepository.save(testArzt);
 
@@ -484,7 +428,6 @@ class ReferencingVsEmbeddingPerformanceTest {
         double speedup = embeddingTime / duration;
         System.out.printf("\n📊 Vergleich: Referencing ist %.2fx schneller bei Updates!%n", speedup);
 
-        // Zurücksetzen
         testArzt.setName(oldName);
         arztRepository.save(testArzt);
     }
@@ -502,7 +445,6 @@ class ReferencingVsEmbeddingPerformanceTest {
 
     @AfterEach
     void tearDown() {
-        // Daten bleiben für nächste Tests
     }
 }
 

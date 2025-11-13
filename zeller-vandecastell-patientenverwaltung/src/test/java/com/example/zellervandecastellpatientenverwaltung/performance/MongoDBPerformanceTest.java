@@ -70,15 +70,14 @@ class MongoDBPerformanceTest {
 
     @AfterEach
     void tearDown() {
-        // Cleanup nach jedem Test
-        arztRepository.deleteAll();
-        patientRepository.deleteAll();
-        behandlungRepository.deleteAll();
-        arztIds.clear();
-        patientIds.clear();
-        behandlungIds.clear();
-        aerzteListe.clear();
-        patientenListe.clear();
+        // arztRepository.deleteAll();
+        // patientRepository.deleteAll();
+        // behandlungRepository.deleteAll();
+        // arztIds.clear();
+        // patientIds.clear();
+        // behandlungIds.clear();
+        // aerzteListe.clear();
+        // patientenListe.clear();
     }
 
     @AfterAll
@@ -181,7 +180,7 @@ class MongoDBPerformanceTest {
         for (int scale : SCALES) {
             System.out.println("\n--- Skalierung: " + scale + " Ärzte ---");
 
-            arztRepository.deleteAll();
+            // arztRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
             arztIds.clear();
 
             long startTime = System.nanoTime();
@@ -220,7 +219,7 @@ class MongoDBPerformanceTest {
         for (int scale : SCALES) {
             System.out.println("\n--- Skalierung: " + scale + " Patienten ---");
 
-            patientRepository.deleteAll();
+            // patientRepository.deleteAll();
             patientIds.clear();
 
             long startTime = System.nanoTime();
@@ -261,7 +260,7 @@ class MongoDBPerformanceTest {
         for (int scale : SCALES) {
             System.out.println("\n--- Skalierung: " + scale + " Behandlungen ---");
 
-            behandlungRepository.deleteAll();
+            // behandlungRepository.deleteAll();
             behandlungIds.clear();
 
             long startTime = System.nanoTime();
@@ -302,7 +301,7 @@ class MongoDBPerformanceTest {
             System.out.println("\n--- Skalierung: " + scale + " Ärzte ---");
 
             // Daten vorbereiten
-            arztRepository.deleteAll();
+            // arztRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
             List<Arzt> aerzte = new ArrayList<>();
             for (int i = 0; i < scale; i++) {
                 aerzte.add(generateArzt(i));
@@ -338,7 +337,7 @@ class MongoDBPerformanceTest {
             System.out.println("\n--- Skalierung: " + scale + " Ärzte ---");
 
             // Daten vorbereiten
-            arztRepository.deleteAll();
+            // arztRepository.deleteAll();
             List<Arzt> aerzte = new ArrayList<>();
             for (int i = 0; i < scale; i++) {
                 aerzte.add(generateArzt(i));
@@ -368,7 +367,7 @@ class MongoDBPerformanceTest {
     @Test
     @Order(6)
     @DisplayName("4.3. Reading: Ärzte mit Filter und Projektion")
-    void testReading_AerzteMitFilterUndProjektion() {
+    void testReading_AerzteMitProjektion() {
         System.out.println("\n" + "=".repeat(80));
         System.out.println("READING OPERATIONS - ÄRZTE MIT FILTER UND PROJEKTION");
         System.out.println("=".repeat(80));
@@ -377,7 +376,7 @@ class MongoDBPerformanceTest {
             System.out.println("\n--- Skalierung: " + scale + " Ärzte ---");
 
             // Daten vorbereiten
-            arztRepository.deleteAll();
+            // arztRepository.deleteAll(); // AUSKOMMENTIERT - Daten bleiben erhalten
             List<Arzt> aerzte = new ArrayList<>();
             for (int i = 0; i < scale; i++) {
                 aerzte.add(generateArzt(i));
@@ -419,7 +418,7 @@ class MongoDBPerformanceTest {
             System.out.println("\n--- Skalierung: " + scale + " Ärzte ---");
 
             // Daten vorbereiten
-            arztRepository.deleteAll();
+            // arztRepository.deleteAll();
             List<Arzt> aerzte = new ArrayList<>();
             for (int i = 0; i < scale; i++) {
                 aerzte.add(generateArzt(i));
